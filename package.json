@@ -1,0 +1,26 @@
+{
+  "name": "png-to-glb-utility",
+  "version": "1.0.0",
+  "description": "Convert .png files to .glb files in Javascript ",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cesswairimu/png-to-glb-utility.git"
+  },
+  "keywords": [
+    "glb",
+    "png"
+  ],
+  "author": "cesswairimu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cesswairimu/png-to-glb-utility/issues"
+  },
+  "homepage": "https://github.com/cesswairimu/png-to-glb-utility#readme",
+  "dependencies": {
+    "gltf-js-utils": "^6.0.0"
+  }
+}
