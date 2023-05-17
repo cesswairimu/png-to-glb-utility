@@ -66,7 +66,7 @@
 
 			});
 
-
+			let gltfFiles;
 			function createGLFTAsset(){
 				console.log("creating a GLFT Asset---")
 
@@ -74,28 +74,53 @@
 				let scene = new GLTFUtils.Scene("");
 				asset.addScene(scene);
 				console.log(scene);
-				let node = new GLTFUtils.Node();
-				console.log(node);
 
+				// create a node
+				let node = new GLTFUtils.Node();
+				node.setTranslation(0, 0, 0);
+				node.setRotationRadians(0, 0, 0);
+				node.setScale(1, 1, 1);
+				console.log(node);
+				scene.addNode(node);
 
 				const material = new GLTFUtils.Material();
 				const texture = new GLTFUtils.Texture(img); // HTMLImageElement
-				console.log(texture);
 				texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-				texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
+				//texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
 				material.pbrMetallicRoughness.baseColorTexture = texture;
+				material.texture = texture;
+
 				const mesh = new GLTFUtils.Mesh();
-				console.log(mesh);
-				console.log(material)
+				const vertices = [
+				new GLTFUtils.Vertex(0, 0, 0),
+				 new GLTFUtils.Vertex(1, 0, 0),
+				 new GLTFUtils.Vertex(1, 1, 0),
+				 new GLTFUtils.Vertex(0, 1, 0)
+				];
+		    mesh.vertices = vertices;
+		    console.log("vertices added" +mesh);
+				
+	
+				
 				mesh.material = [material];
-				console.log(mesh);
-			//	var objectCopy = JSON.parse(JSON.stringify(asset));
-				//console.log(objectCopy);
-				node.mesh = mesh;
-				scene.addNode(node);
+				node.mesh =mesh;
+
 				console.log(node);
 				console.log(mesh);
 				console.log("final mesh" + node.mesh);
+
+				const glbFiles =  GLTFUtils.exportGLB(asset);
+				console.log("glb-formatted");
+				console.log(glbFiles);
+
+
+				
+				gltfFiles = GLTFUtils.exportGLTF(asset);
+			
+
+				console.log("done!")
+				console.log(JSON.stringify(gltfFiles));
+				return gltfFiles  + glbFiles;
 
 
 			}
