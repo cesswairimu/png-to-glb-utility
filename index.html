@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>png-image-to-glb-formated-file-gen</title>
+
+		<script src="node_modules/gltf-js-utils/dist/gltfjsutils.js"></script>
+		<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+		<link rel="stylesheet" href="dist/main.css">
+	</head>
+	<body>
+		<div class="container center">
+			<h3>PPNG image to glb-formated file Generator</h3>
+			<br>
+			<div class="row">
+				<div class="mb-3">
+					<label for="formFile" class="form-label" id="img-preview">Default file input example</label>
+					<input class="form-control" type="file" id="formFile" accept="image/*">
+					<br>
+				 <div class="invisible" id="convert-btn">
+					 <button type="button" class="btn btn-secondary">Convert to glb</button>
+				 </div>
+				 <img class="invisible" id="test-image" src="dist/test.png">
+				</div>
+			</div>
+		</div>
+		
+	
+		<script>
+
+			//-----select image code 
+
+			const choseFile =  document.getElementById("formFile");
+			const imgPreview = document.getElementById("img-preview");
+			let convertBtn = document.getElementById("convert-btn");
+			let img = document.getElementById("test-image");
+
+
+			choseFile.addEventListener("change", function() {
+				getImgData();
+			})
+
+			function getImgData() {
+				const files = choseFile.files[0];
+				if (files) {
+					const fileReader = new FileReader();
+					fileReader.readAsDataURL(files);
+					fileReader.addEventListener("load", function(){
+						imgPreview.style.display = "block";
+						imgPreview.innerHTML = '<img"' + this.result +'" />';
+						convertBtn.classList.remove('invisible');
+										});
+				}
+			}
+
+			//---------end of image upload
+
+
+			// -------creating a GLFT Asset
+
+			convertBtn.addEventListener("click", function(){
+				createGLFTAsset();
+
+			});
+
+
+			function createGLFTAsset(){
+				console.log("creating a GLFT Asset---")
+
+			  let asset = new  GLTFUtils.GLTFAsset({"number": 0, "index": 0});
+				let scene = new GLTFUtils.Scene("");
+				asset.addScene(scene);
+				console.log(scene);
+				let node = new GLTFUtils.Node();
+				console.log(node);
+
+
+				const material = new GLTFUtils.Material();
+				const texture = new GLTFUtils.Texture(img); // HTMLImageElement
+				console.log(texture);
+				texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+				texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
+				material.pbrMetallicRoughness.baseColorTexture = texture;
+				const mesh = new GLTFUtils.Mesh();
+				console.log(mesh);
+				console.log(material)
+				mesh.material = [material];
+				console.log(mesh);
+			//	var objectCopy = JSON.parse(JSON.stringify(asset));
+				//console.log(objectCopy);
+				node.mesh = mesh;
+				scene.addNode(node);
+				console.log(node);
+				console.log(mesh);
+				console.log("final mesh" + node.mesh);
+
+
+			}
+
+			//---------------end of GLFT Asset creation
+
+
+
+
+
+
+
+
+
+
+		/// --- sandbox
+
+		
+		
+			// var asset = new  GLTFUtils.GLTFAsset();
+			// let scene = new GLTFUtils.Scene();
+			// asset.addScene(scene);
+
+			// console.log(scene);
+			// let node = new GLTFUtils.Node();
+//  node.setTranslation(0, 0, 0);
+//    node.setRotationRadians(0, 0, 0);
+//  node.setScale(0.8, 0.8, 0.8);
+
+// console.log(scene);
+
+// const material = new GLTFUtils.Material();
+// const texture = new GLTFUtils.Texture(img); // HTMLImageElement
+// console.log(texture);
+// texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+// texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
+// material.pbrMetallicRoughness.baseColorTexture = texture;
+
+// const mesh = new GLTFUtils.Mesh();
+// console.log(material)
+// mesh.material = [material];
+// var objectCopy = JSON.parse(JSON.stringify(asset));
+// console.log(objectCopy);
+// node.mesh = mesh;
+// scene.addNode(node);
+
+		
+//GLTFUtils.
+
+
+
+// const v1 = new GLTFUtils.Vertex();
+// v1.x = 1;
+// v1.y = 1;
+// v1.z = 1;
+// v1.u = 0;
+// v1.v = 0;
+// const v2 = new GLTFUtils.Vertex();
+// // ...
+
+//mesh.addFace(v1, faceMaterialIndex /* 0 */);
+
+//mesh.addFace(v1, v2, v3, faceMaterialIndex /* 0 */);
+// mesh.addFace(v4, v5, v6, faceMaterialIndex);
+// ...
+// console.log("finished!!");
+// console.log(mesh);
+
+// const fs = require('fs');
+// fs.writeFile('new.gltf', objectCopy, (err) => {
+// if (err) throw err;
+// })
+// const gltfFiles = await GLTFUtils.exportGLTF(asset, {
+//   bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
+//   imageOutputType: GLTFUtils.BufferOutputType.DataURI,
+// });
+
+// console.log(gltfFiles);
+		
+
+
+
+
+
+
+			// console.log("oone");
+
+			// var one = gltfjsutils();
+			// console.log(one);
+
+
+
+			// var asset = gltfjsutils().GLTFAsset();
+			// console.log(asset);
+
+
+		</script>
+
+
+</body>
+</html>
