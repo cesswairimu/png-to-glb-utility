@@ -25,7 +25,9 @@
   "dependencies": {
     "bootstrap": "^5.2.3",
     "font-awesome": "^4.7.0",
-    "gltf-js-utils": "^6.0.0"
+    "gltf-js-utils": "^6.0.0",
+    "jszip": "^3.10.1",
+    "jquery": "^3.7.0"
   },
   "devDependencies": {
     "http-server": "^14.1.1"
