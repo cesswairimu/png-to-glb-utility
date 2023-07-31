@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<div class="container center">
-			<h3>(Sample2) PNG image to glb-formated file Generator</h3>
+			<h3>(Sample-3) PNG image to glb-formated file Generator</h3>
 			<br>
 			<div class="row">
 				<div class="mb-3">
@@ -130,13 +130,6 @@
 				console.log(glbFiles);
 				console.log("----asset----");
 				console.log(asset);
-
-
-				
-
-
-
-
 			
 
 				// export asset as  gltf
@@ -157,12 +150,12 @@
 				
 				// extract promise
 				
-				const gltfBfiles =  await GLTFUtils.exportGLTF(asset, {
-					bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
-					imageOutputType: GLTFUtils.BufferOutputType.DataURI,
-				});
-				console.log("---gltfBfiles-----");
-				console.log(gltfBfiles);
+				// const gltfBfiles =  await GLTFUtils.exportGLTF(asset, {
+				// 	bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
+				// 	imageOutputType: GLTFUtils.BufferOutputType.DataURI,
+				// });
+				// console.log("---gltfBfiles-----");
+				// console.log(gltfBfiles);
 
 				gltfFiles.then(function(result){
 					console.log("result------");
@@ -170,135 +163,17 @@
 				})
 
 
-				// export glft with data uri
-				const object = await GLTFUtils.exportGLTF(asset, {
-					bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
-					imageOutputType: GLTFUtils.BufferOutputType.DataURI,
-				});
-				console.log("object---")
-				console.log(object);
-
-
-//------ 4th Edit ------------------- //
 				// plain file txt
 			var element = document.createElement('a');
-			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(asset, null, 2)));
+			//element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(asset, null, 2)));
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(
+				asset,
+				 null, 2)));
 			element.setAttribute('download', "test.gltf");
 			element.style.display = 'none';
 			document.body.appendChild(element);
 			element.click();
-			document.body.removeChild(element);
-
-
-
-
-
-
-			/// edit 5
-
-
-
-			/// 1---
-
-
-
-			// var elem = document.createElement('a');
-			// console.log("downloading glb file---");
-
-			// //elem.setAttribute('href', 'data:application/octet-binary;charset=utf-8,' + encodeURIComponent(glbFiles));
-			// elem.href =  URL.createObjectURL(new Blob( [glbFiles], { type: '"application/octet-binary;charset=utf-8' }));
-			// elem.setAttribute('download', "test.glb");
-			// elem.style.display = 'none';
-			// document.body.appendChild(elem);
-			// elem.click();
-			// document.body.removeChild(elem);
-
-
-
-			// 2 ----
-
-	// 		const a = document.createElement('a')
-  // a.href = URL.createObjectURL(new Blob(
-  //   [ glbFiles ],
-  //   { type: '"application/octet-binary;charset=utf-8' }
-  // ))
-  // a.download = "test.glb"
-  // a.click()
-
-
-
-
-
-
-
-
-			// var file = new Blob([response], {type: "application/octet-binary;charset=utf-8"});
-			// var a = document.createElement("a"), url = URL.createObjectURL(file);
-      // a.href = url;
-			// a.download = filename;
-			// document.body.appendChild(a);
-			// a.click();
-
-
-
-
-			// var file = new Blob([response], {type: "application/octet-binary;charset=utf-8"});
-			// 	var a = document.createElement("a"), url = URL.createObjectURL(file);
-      //   a.href = url;
-			// 	a.download = filename;
-			// 	document.body.appendChild(a);
-			// 	a.click();
-
-
-
-
-			// // download glb bufferOutput
-			// var file = new Blob([response], {type: "application/octet-binary;charset=utf-8"});
-			// var a = document.createElement("a"), url = URL.createObjectURL(file);
-			// a.href = url;
-			// a.download = filename;
-			// document.body.appendChild(a);
-			// a.click();
-
-
-
-			// var elem = document.createElement('a');
-			// elem.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(glbFiles, null, 2)));
-			// elem.setAttribute('download', "test.glb");
-			// elem.style.display = 'none';
-			// document.body.appendChild(elem);
-			// elem.click();
-			// document.body.removeChild(elem);
-
-
-
-											/// end of edit 5
-
-
-
-			///  glb download
-			// const link = document.createElement("a");
-			// link.href = window.URL.createObjectURL(glbFiles);
-			// link.download = "test.glb";
-			// link.click();
-
-			
-
-
-			// // gltf download
-			// const link1 = document.createElement("a");
-			// const url  = window.URL.createObjectURL(new Blob([gltfFiles]));
-			// link1.href = url;
-			// link1.download = "test.gltf";
-			// link1.click();
-
-
-
-
-				
-	// ----- end of 4th Edit ------------------- //
-
-			
+			document.body.removeChild(element);	
 			
 
 				console.log("glft-formatted---");
