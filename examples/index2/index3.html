@@ -108,13 +108,45 @@
 				// const texture = new GLTFUtils.Texture(uploadImg); // HTMLImageElement
 				//	const texture = new GLTFUtils.Texture(img); // HTMLImageElement
 				
-				//texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-				//texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
+				texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+				texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
 				material.pbrMetallicRoughness.baseColorTexture = texture;
 				material.texture = texture;
 				mesh.material = [material];
 				node.mesh = mesh;	
 
+
+
+const v1 = new GLTFUtils.Vertex();
+v1.x = 1;
+v1.y = 1;
+v1.z = 1;
+v1.u = 1;
+v1.v = 1;
+const v2 = new GLTFUtils.Vertex();
+v2.x = 1;
+v2.y = 0;
+v2.z = 1;
+v2.u = 1;
+v2.v = 0;
+const v3 = new GLTFUtils.Vertex();
+v3.x = 0;
+v3.y = 0;
+v3.z = 1;
+v3.u = 0;
+v3.v = 0;
+const v4 = new GLTFUtils.Vertex();
+v4.x = 0;
+v4.y = 1;
+v4.z = 1;
+v4.u = 0;
+v4.v = 1;
+
+const faceColor = undefined;
+const faceMaterialIndex = 0;
+mesh.addFace(v1, v2, v3, faceColor, faceMaterialIndex);
+mesh.addFace(v2, v3, v4, faceColor, faceMaterialIndex);
+// some other combination of 2,3,4
 
 				console.log(node);
 				console.log(mesh);
@@ -159,21 +191,21 @@
 
 				gltfFiles.then(function(result){
 					console.log("result------");
-					console.log(result)
+					console.log(result['model.gltf'])
+
+				// plain file txt
+				var element = document.createElement('a');
+				//element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(asset, null, 2)));
+				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+					result['model.gltf']);
+				element.setAttribute('download', "test.gltf");
+				element.style.display = 'none';
+				document.body.appendChild(element);
+				element.click();
+				document.body.removeChild(element);	
 				})
 
 
-				// plain file txt
-			var element = document.createElement('a');
-			//element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(asset, null, 2)));
-			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(
-				asset,
-				 null, 2)));
-			element.setAttribute('download', "test.gltf");
-			element.style.display = 'none';
-			document.body.appendChild(element);
-			element.click();
-			document.body.removeChild(element);	
 			
 
 				console.log("glft-formatted---");
