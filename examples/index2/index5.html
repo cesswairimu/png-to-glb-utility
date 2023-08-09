@@ -109,8 +109,9 @@
 				/// new
 
 				
-				const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0];
-let vertex_hash = [];
+				 const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0];
+				//const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,];
+				let vertex_hash = [];
 for (let i = 0; i < vertices.length; i += 3) {
   const vertex = new GLTFUtils.Vertex();
   vertex.x = vertices[i];
@@ -118,8 +119,12 @@ for (let i = 0; i < vertices.length; i += 3) {
   vertex.z = vertices[i + 2];
   vertex_hash.push(vertex);
 }
+console.log("vertex-hash------");
+console.log(vertex_hash);
 
+// var triangles = [0,1,2,2,3,0,4,5,1,1,0,4,6,7,5,5,4,6,3,2,7,7,6,3,7,1,5,7,2,1,4,0,6,0,3,6];
 var triangles = [0,1,2,2,3,0,4,5,1,1,0,4,6,7,5,5,4,6,3,2,7,7,6,3,7,1,5,7,2,1,4,0,6,0,3,6];
+//var triangles = [0,1,2,2,3,0,4,5,1,1,0,4,6,7,5,5,4,6,3,2,7,7,6,3,];
 const mesh = new GLTFUtils.Mesh();
 const material = new GLTFUtils.Material();
 console.log('image uploaded ----' +uploadImg);
