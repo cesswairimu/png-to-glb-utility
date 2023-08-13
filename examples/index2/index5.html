@@ -94,6 +94,37 @@
 				let scene = new GLTFUtils.Scene("");
 				asset.addScene(scene);
 
+				// ---- another asset ----
+				let cesset = new  GLTFUtils.GLTFAsset({"number": 1, "index": 1}); 
+				let cene = new GLTFUtils.Scene("");
+				cesset.addScene(cene)
+				let nod = new GLTFUtils.Node();
+				//const buffer = GLTFUtils.BufferOutputType
+
+				nod.setTranslation(0.0, 1.0, 0.0 );
+				nod.setRotationDegrees(360, 90, 120);
+				//node.setAttribute()
+				//nod.setRotationRadians(0.0, 0.0, 0.0, 1.0 );
+				//nod.setScale(1, 1, 1);
+				cene.addNode(nod);
+				const mes = new GLTFUtils.Mesh();
+				mes.material = [new GLTFUtils.Material()];
+				nod.mesh = mes;
+
+				let newFiles = downloadGltf(cesset);
+				console.log("cestse");
+
+				console.log(newFiles);
+
+
+
+
+
+				// ---- end of another asset ----
+
+
+
+
 				// create a node
 				let node = new GLTFUtils.Node();
 				node.setTranslation(0, 0, 0);
@@ -109,8 +140,9 @@
 				/// new
 
 				
-				 const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0];
-				//const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,];
+				// const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0];
+				const  vertices = [-0.5, 0.0, 0.0, 0.5, 0.0, 0.0, -0.5, 0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 1.0, 0.0, 0.5, 1.0, 0.0, -0.5, 1.5, 0.0, 0.5, 1.5, 0.0, -0.5, 2.0, 0.0, 0.5, 2.0, 0.0];
+				//const vertices = [1,0,1,1,0,0,0,0,0]//,0,0,1,];
 				let vertex_hash = [];
 for (let i = 0; i < vertices.length; i += 3) {
   const vertex = new GLTFUtils.Vertex();
@@ -122,8 +154,13 @@ for (let i = 0; i < vertices.length; i += 3) {
 console.log("vertex-hash------");
 console.log(vertex_hash);
 
+ var triangles = [0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4, 4, 5, 7, 4, 7, 6, 6, 7, 9, 6, 9, 8];
 // var triangles = [0,1,2,2,3,0,4,5,1,1,0,4,6,7,5,5,4,6,3,2,7,7,6,3,7,1,5,7,2,1,4,0,6,0,3,6];
-var triangles = [0,1,2,2,3,0,4,5,1,1,0,4,6,7,5,5,4,6,3,2,7,7,6,3,7,1,5,7,2,1,4,0,6,0,3,6];
+//var triangles = [0,1,2,2,3,0,4,5,1]//1,0,4,6,7,5,5,4,6,3,2,7,7,6,3]//,7,1,5,7,2,1,4,0,6,0,3,6];
+
+
+
+
 //var triangles = [0,1,2,2,3,0,4,5,1,1,0,4,6,7,5,5,4,6,3,2,7,7,6,3,];
 const mesh = new GLTFUtils.Mesh();
 const material = new GLTFUtils.Material();
