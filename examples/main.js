@@ -2,13 +2,10 @@
 			let gltfFiles;
 			let glbFiles;
 			
-			// -------creating a GLFT Asset
 			async function createGLFTAsset(uploadedSpace){
         let asset = new  GLTFUtils.GLTFAsset({"number": 0, "index": 0});
 				let scene = new GLTFUtils.Scene("");
 				asset.addScene(scene);
-
-
 
 				// create a node
 				let node = new GLTFUtils.Node();
@@ -45,30 +42,27 @@
           mesh.addFace(v1, v2, v3, {r: 1, g: 1, b: 1}, 0);
         }
         node.mesh = mesh;
-
-
+        console.log(asset);
 				
 				glbFiles = downloadGlb(asset);
-				console.log(asset);
         gltfFiles = downloadGltf(asset);
         
         glbFiles.then(function(result){
-          const arrBuffer = result;
-          const blo = new Blob([arrBuffer], { type: 'application/octet-stream' });
-          const ann = document.createElement('a');
-          ann.href = URL.createObjectURL(blo);
-          ann.download = 'cess.glb';
-          ann.click();
+          const arrayBuffer = result;
+          const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'file.glb';
+          a.click();
         })
 
 				gltfFiles.then(function(result){
 					// console.log("result------");
 					// console.log(result['model.gltf'])
-
 				var element = document.createElement('a');
 				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
 					result['model.gltf']);
-				element.setAttribute('download', "test.gltf");
+				element.setAttribute('download', "file.gltf");
 				element.style.display = 'none';
 				document.body.appendChild(element);
 				element.click();
@@ -76,9 +70,7 @@
 				})				
 
       }
-    
 			
-			//---------------end of GLFT section
 
 			async function downloadGltf(asset){
 				let files =   await GLTFUtils.exportGLTF(asset, {

@@ -25,7 +25,6 @@
 				 <div class="invisible" id="convert-btn">
 					 <button type="button" class="btn btn-secondary">Convert to glb</button>
 				 </div>
-				 <img class="" id="test-image" height="300" width="350" src="test.png">
 				 <img id="uploaded-image" height="300" width="350">
 				</div>
 			</div>
@@ -37,13 +36,9 @@
 		<script>
 			
 			const choseFile =  document.getElementById("formFile");
-			const imgPreview = document.getElementById("img-preview");
 			let convertBtn = document.getElementById("convert-btn");
 			let uploadedSpace =  document.getElementById("uploaded-image");
-			let img = document.getElementById("test-image");
-			let uploadImg;
 			
-
 			choseFile.addEventListener("change", function() {
 				getImgData();
 			})
@@ -54,29 +49,18 @@
 					const fileReader = new FileReader();
 					fileReader.readAsDataURL(files);
 					fileReader.addEventListener("load", function(){
-						imgPreview.style.display = "block";
-						imgPreview.innerHTML = '<img"' + this.result +'" />';
 						uploadImg = this.result;
 						let url = URL.createObjectURL(files);
 						uploadedSpace.src = url;
 						convertBtn.classList.remove('invisible');
 										});
 				}
-
-			
 			}
-
-
-
-			//---------end of image upload
-
-
 
 			convertBtn.addEventListener("click", function(){
 				createGLFTAsset(uploadedSpace);
 
 			});
-
 
 		</script>
 
