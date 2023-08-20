@@ -85,6 +85,8 @@
 			let v1;
 			let v2;
 			let v3;
+			let glbShit;
+			let glbFiles;
 			
 			// -------creating a GLFT Asset
 			async function createGLFTAsset(){
@@ -127,9 +129,14 @@
 
 				// create a node
 				let node = new GLTFUtils.Node();
-				node.setTranslation(0, 0, 0);
-				node.setRotationRadians(0, 0, 0);
-				node.setScale(1, 1, 1);
+				node.setTranslation(0.1, 0.2, -3);
+				node.setRotationDegrees(20, 30, -40);
+				node.setScale(0.8, 0.8, 0.8);
+		
+				// node.setTranslation(0.0, 1.0, 0.0);
+				// node.setRotationDegrees(360, 90, 120);
+				// // node.setRotationRadians(0, 0, 0);
+				// node.setScale(1, 1, 1);
 				//console.log(node);
 				scene.addNode(node);
 				console.log(scene);
@@ -142,6 +149,7 @@
 				
 				// const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0];
 				const  vertices = [-0.5, 0.0, 0.0, 0.5, 0.0, 0.0, -0.5, 0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 1.0, 0.0, 0.5, 1.0, 0.0, -0.5, 1.5, 0.0, 0.5, 1.5, 0.0, -0.5, 2.0, 0.0, 0.5, 2.0, 0.0];
+				// const  vertices = [0,0,0,1,0,0,0,1,0,1,1,0];
 				//const vertices = [1,0,1,1,0,0,0,0,0]//,0,0,1,];
 				let vertex_hash = [];
 for (let i = 0; i < vertices.length; i += 3) {
@@ -170,6 +178,7 @@ const texture = new GLTFUtils.Texture(uploadedSpace);
 texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
 texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
 material.pbrMetallicRoughness.baseColorTexture = texture;
+material.doubleSided = true;
 material.texture = texture;
 mesh.material = [material];
 for (let i = 0; i < triangles.length; i += 3) {
@@ -243,11 +252,41 @@ node.mesh = mesh;
 				console.log(scene);
 
 				// export asset as glb
-				// const glbFiles =  GLTFUtils.exportGLB(asset);
+				//const glbFiles =  GLTFUtils.exportGLB(asset);
 				const glbFiles = downloadGlb(asset);
 				console.log("glb-formatted---");
 				console.log(glbFiles);
-				console.log("----asset----");
+
+				// const glbFiles = downloadGlb(asset);
+
+			//  const link = document.createElement("a");
+			//  link.href = window.URL.createObjectURL(glbFiles);
+			//  link.download = "test.glb";
+			//  link.click();
+
+			// 	console.log("glb-formatted---");
+			// 	console.log(glbFiles);
+
+
+				/// ddonload glb plainly code
+				
+// fetch(glbFiles)
+//   .then(response => response.blob())
+//   .then(blob => save(blob, 'scene.glb'));
+
+					
+
+		
+
+
+
+				// const glbArrayBuffer = await GLTFUtils.exportGLB(asset);
+				// saveArrayBuffer(glbArrayBuffer, 'scene.glb');
+				// console.log("glb-array bufferr ---NEW---");
+				// console.log(glbArrayBuffer);
+				// //console.log(glbFiles);
+				// console.log(glbArrayBuffer);
+				//console.log("----asset----");
 				console.log(asset);
 			
 
@@ -264,6 +303,72 @@ node.mesh = mesh;
 				});
 				console.log("---mixedFiles-----");
 				console.log(mixedFiles);
+				console.log(mixedFiles['model.glb']);
+				glbShit =  mixedFiles['model.glb'];
+
+
+				// const arrayBuffer = new ArrayBuffer(1024);
+				const arrayBuffer = glbFiles;
+const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = 'file.glb';
+a.click();
+
+
+
+
+
+				// another try
+
+
+				//  /// 20th ----
+				//  //gltfFiles.then(function(result){
+				//  mixedFiles.then(function(result){
+        //     const url = window.URL.createObjectURL(new Blob([result['model.glb'].data]));
+        //     const link = document.createElement('a');
+        //     link.href = url;
+        //     link.setAttribute('download', 'testing.glb'); //or any other extension
+        //     document.body.appendChild(link);
+        //     link.click();
+				// })
+				
+
+
+
+				// mixedFiles.then(function(result){
+				// 	console.log("result------");
+				// 	console.log(result['model.gltf'])
+
+				// // plain file txt
+				// var link = document.createElement('a');
+				// //element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(asset, null, 2)));
+				// link.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+				// 	result['model.glb']);
+				// 	link.setAttribute('download', "test.glb");
+				// 	link.style.display = 'none';
+				// document.body.appendChild(link);
+				// link.click();
+				// document.body.removeChild(link);	
+				// })
+        
+
+
+
+				 /// end 20th ----
+
+				
+
+				var elem = document.createElement('a');
+				//element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(asset, null, 2)));
+				elem.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+				mixedFiles['model.glb']);
+					elem.setAttribute('download', "test.glb");
+					elem.style.display = 'none';
+				document.body.appendChild(elem);
+				elem.click();
+				document.body.removeChild(elem);	
 
 
 				
@@ -275,6 +380,9 @@ node.mesh = mesh;
 				// });
 				// console.log("---gltfBfiles-----");
 				// console.log(gltfBfiles);
+
+
+
 
 				gltfFiles.then(function(result){
 					console.log("result------");
@@ -318,6 +426,31 @@ node.mesh = mesh;
 			let files = await GLTFUtils.exportGLB(asset);
 			return files;
 			}
+
+
+			/// download glb
+// 			document.body.appendChild(btn);
+// btn.textContent = 'Download .glb';
+// btn.onclick = download;
+
+// function download() {
+//   const exporter = new GLTFUtils.exportGLB();
+//   exporter.parse(
+//     scene,
+//     function (result) {
+//       saveArrayBuffer(result, 'scene.glb');
+//     },
+//     { binary: true }
+//   );
+// }
+
+// function saveArrayBuffer(buffer, filename) {
+//   save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
+// }
+
+// const link = document.createElement('a');
+// link.style.display = 'none';
+// document.body.appendChild(link)
 
 		</script>
 
