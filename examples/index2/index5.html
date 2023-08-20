@@ -253,7 +253,7 @@ node.mesh = mesh;
 
 				// export asset as glb
 				//const glbFiles =  GLTFUtils.exportGLB(asset);
-				const glbFiles = downloadGlb(asset);
+				glbFiles = downloadGlb(asset);
 				console.log("glb-formatted---");
 				console.log(glbFiles);
 
@@ -308,13 +308,29 @@ node.mesh = mesh;
 
 
 				// const arrayBuffer = new ArrayBuffer(1024);
-				const arrayBuffer = glbFiles;
+				const arrayBuffer = glbShit;
 const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
 
 const a = document.createElement('a');
 a.href = URL.createObjectURL(blob);
 a.download = 'file.glb';
 a.click();
+
+
+
+glbFiles.then(function(result){
+					console.log("result for glb Files---- cess file--");
+					console.log(result)
+
+				// plain file txt
+				const arrBuffer = result;
+const blo = new Blob([arrBuffer], { type: 'application/octet-stream' });
+
+const ann = document.createElement('a');
+ann.href = URL.createObjectURL(blo);
+ann.download = 'cess.glb';
+ann.click();
+				})
 
 
 
