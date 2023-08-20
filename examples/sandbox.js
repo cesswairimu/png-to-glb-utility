@@ -1,8 +1,75 @@
-		
+let upload;
+function init() {
+  let convertBtn = document.getElementById('convert-btn');
+  console.log("THis was very nuch ran!")
+  let files;
+
+  function uploadFile(e) {
+
+    e.preventDefault();
+    e.stopPropagation(); 
+    files = e.target.files[0]
+    console.log(files);
+    console.log('updating convert btn');
+    convertBtn.classList.remove('invisible');
+
+
+
+  
+
+
+
+    if (e.target && e.target.files) var file = e.target.files[0];
+    else var file = e.dataTransfer.files[0];
+    if(!file) return;
+
+    var reader = new FileReader();
+
+    reader.onload = () => {
+      console.log('the result-------------------');
+
+      console.log(reader.result);
+          createGLFTAsset(reader.result);
+
+    };
+
+    upload = reader.readAsDataURL(file);
+    console.log(upload);
+    createGLFTAsset(reader.result);
+  
+  }
+
+
+  // convertBtn.addEventListener("click", function(){
+  //   createGLFTAsset(upload);
+
+  // });
+  // if (files){
+  //   $('#convertBtn').classList.remove('invisible');
+  // }
+
+  $('#fileInput').on('change', uploadFile);
+
+ 
+}
+
+// function createGLFTAsset(upload){
+//   console.log('inside gltf creation-----')
+
+// }
+
+
+
+
+
+
 			let gltfFiles;
 			let glbFiles;
 			
 			async function createGLFTAsset(uploadedSpace){
+        console.log(uploadedSpace);
+          console.log('inside gltf creation-----')
+
         let asset = new  GLTFUtils.GLTFAsset({"number": 0, "index": 0});
 				let scene = new GLTFUtils.Scene("");
 				asset.addScene(scene);
@@ -83,4 +150,4 @@
 			async function downloadGlb(asset){
 			let files = await GLTFUtils.exportGLB(asset);
 			return files;
-      }      
+      }
