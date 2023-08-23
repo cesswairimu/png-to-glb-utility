@@ -11,6 +11,7 @@
 		<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
 
 		<link rel="stylesheet" href="dist/main.css">
+		<script src="dist/main.js"></script>
 	</head>
 	<body>
 		<div class="container center">
@@ -18,225 +19,19 @@
 			<br>
 			<div class="row">
 				<div class="mb-3">
-					<label for="formFile" class="form-label" id="img-preview">Default file input example</label>
+					<label for="formFile" class="form-label" id="img-preview">File input</label>
 					<input class="form-control" type="file" id="formFile" accept="image/*">
 					<br>
 				 <div class="invisible" id="convert-btn">
 					 <button type="button" class="btn btn-secondary">Convert to glb</button>
-				 </div>
-				 <img class="" id="test-image" style="display: none;" src="examples/test.png">
+				 </div> 
 				</div>
 			</div>
-
-		
-		</div>
 		
 	
-		<script>
-			//-----select image code 
-
-			const choseFile =  document.getElementById("formFile");
-			const imgPreview = document.getElementById("img-preview");
-			let convertBtn = document.getElementById("convert-btn");
-			let img = document.getElementById("test-image");
-
-
-			choseFile.addEventListener("change", function() {
-				getImgData();
-			})
-
-			function getImgData() {
-				const files = choseFile.files[0];
-				if (files) {
-					const fileReader = new FileReader();
-					fileReader.readAsDataURL(files);
-					fileReader.addEventListener("load", function(){
-						imgPreview.style.display = "block";
-						imgPreview.innerHTML = '<img"' + this.result +'" />';
-						convertBtn.classList.remove('invisible');
-										});
-				}
-			}
-
-			//---------end of image upload
-
-
-			// -------creating a GLFT Asset
-
-			convertBtn.addEventListener("click", function(){
-				createGLFTAsset();
-
-			});
-
-			let gltfFiles;
-			async function createGLFTAsset(){
-				console.log("creating a GLFT Asset---")
-
-			  let asset = new  GLTFUtils.GLTFAsset({"number": 0, "index": 0});
-				let scene = new GLTFUtils.Scene("");
-				asset.addScene(scene);
-				console.log(scene);
-
-				// create a node
-				let node = new GLTFUtils.Node();
-				node.setTranslation(0, 0, 0);
-				node.setRotationRadians(0, 0, 0);
-				node.setScale(1, 1, 1);
-				console.log(node);
-				scene.addNode(node);
-
-				// add vertices
-				const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0];
-				const vertices = [1,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0];
-
-
-				let v1;
-				let v2;
-				let v3;
-
-        let vertex_hash = [];
-        for (let i = 0; i < vertices.length; i += 3) {
-					const vertex = new GLTFUtils.Vertex();
-					vertex.x = vertices[i];
-					vertex.y = [i + 1];
-					vertex.z = vertices[i + 2];
-					vertex_hash.push(vertex);
-				}
-				var triangles = [0,1,2,2,3,0,4,5,1,1,0,4,6,7,5,5,4,6,3,2,7,7,6,3,7,1,5,7,2,1,4,0,6,0,3,6];
-				
-				const mesh = new GLTFUtils.Mesh();
-
-				const texture = new GLTFUtils.Texture(img); // HTMLImageElement
-				texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-				//texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
-				material.pbrMetallicRoughness.baseColorTexture = texture;
-				material.texture = texture;
-
-				//const material = new GLTFUtils.Material(img);
-				console.log("the material");
-				console.log(material);
-        mesh.material = [material];
-        for (let i = 0; i < triangles.length; i += 3) {
-        v1 = vertex_hash[triangles[i]];
-        v2 = vertex_hash[triangles[i + 1]];
-        v3 = vertex_hash[triangles[i + 2]];
-				mesh.addFace(v1, v2, v3, {r: 1, g: 1, b: 1}, 0);
-			}
-			node.mesh = mesh;
-
-
-
-
-
-				// const material = new GLTFUtils.Material();
-				///---texture ---//
-				// const texture = new GLTFUtils.Texture(img); // HTMLImageElement
-				// texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-				// //texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
-				// material.pbrMetallicRoughness.baseColorTexture = texture;
-				// material.texture = texture;
-
-				// const mesh = new GLTFUtils.Mesh();
-				// const vertices = [
-				// new GLTFUtils.Vertex(0, 0, 0),
-				//  new GLTFUtils.Vertex(1, 0, 0),
-				//  new GLTFUtils.Vertex(1, 1, 0),
-				//  new GLTFUtils.Vertex(0, 1, 0)
-				// ];
-		    mesh.vertices = vertices;
-		    console.log("vertices added" +mesh);
-				
-	
-				
-				mesh.material = [material];
-				node.mesh =mesh;
-
-				console.log(node);
-				console.log(mesh);
-				console.log("final mesh" + node.mesh);
-
-				// export asset as glb
-				// const glbFiles =  GLTFUtils.exportGLB(asset);
-				const glbFiles = downloadGlb(asset);
-				console.log("glb-formatted---");
-				console.log(glbFiles);
-
-
-				
-				// export asset as  gltf
-				// gltfFiles = GLTFUtils.exportGLTF(asset);
-				gltfFiles = downloadGltf(asset);
-
-
-				// export glft with data uri
-				const object = await GLTFUtils.exportGLTF(asset, {
-					bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
-					imageOutputType: GLTFUtils.BufferOutputType.DataURI,
-				});
-				console.log("object---")
-				console.log(object);
-
-
-//------ 4th Edit ------------------- //
-				// plain file txt
-				var element = document.createElement('a');
-			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(asset)));
-			element.setAttribute('download', "test.gltf");
-			element.style.display = 'none';
-			document.body.appendChild(element);
-			element.click();
-			document.body.removeChild(element);
-
-
-			///  glb download
-			// const link = document.createElement("a");
-			// link.href = window.URL.createObjectURL(glbFiles);
-			// link.download = "test.glb";
-			// link.click();
-
-			
-
-
-			// // gltf download
-			// const link1 = document.createElement("a");
-			// const url  = window.URL.createObjectURL(new Blob([gltfFiles]));
-			// link1.href = url;
-			// link1.download = "test.gltf";
-			// link1.click();
-
-
-
-
-				
-	// ----- end of 4th Edit ------------------- //
-
-			
-			
-
-				console.log("glft-formatted---");
-				console.log(gltfFiles);
-				console.log(JSON.stringify(gltfFiles));
-				// return gltfFiles  + glbFiles;
-
-				
-
-			}
-			
-			//---------------end of GLFT section
-
-			async function downloadGltf(asset){
-				let files = await GLTFUtils.exportGLTF(asset);;
-				return files;
-
-			}
-
-			async function downloadGlb(asset){
-			let files = await GLTFUtils.exportGLB(asset);
-			return files;
-			}
-
-		
-		</script>
+	<script>
+		init();
+	</script>
 
 
 </body>

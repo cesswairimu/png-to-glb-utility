@@ -14,26 +14,25 @@
 		<script src="sandbox.js"></script>
 	</head>
 	<body>
-      <!-- <center>
-        <i class="hidden fa fa-spin fa-circle-o-notch"></i>
-	<input type="file" id="fileInput" value="" accept="image/png"><br />
-      </center>
-		</div>	 -->
-		
-		<div class="row">
-			<div class="mb-3">
-				<label for="formFile" class="form-label" id="img-preview">Default file input example</label>
-				<input class="form-control" type="file" id="fileInput" accept="image/*">
-				<br>
-			 <div class="invisible" id="convert-btn">
-				 <button type="button" class="btn btn-secondary">Convert to glb</button>
-			 </div>
-			 <img id="uploaded-image" height="300" width="350">
+		<div class="container center">
+			<hr>
+			<h3> PNG image to gltf converter</h3>
+			<p> ( Choose a file to create a gltf asset using the image and download it as .gltf )</p>
+			<br>
+			<div class="row">
+				<div class="mb-3">
+					<label for="formFile" class="form-label" id="img-preview">File input</label>
+					<input class="form-control" type="file" id="formFile" accept="image/*">
+					<br>
+				 <div class="invisible" id="convert-btn">
+					 <button type="button" class="btn btn-secondary">Convert to glb</button>
+				 </div>
+				 <img id="uploaded-image" height="300" width="350">
+				</div>
 			</div>
-		</div>
 	
 		<script>
-			init();
+			init('gltf');
 		</script>
 
 

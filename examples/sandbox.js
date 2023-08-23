@@ -1,7 +1,8 @@
 let upload;
-function init() {
+function init(type='glb') {
   let convertBtn = document.getElementById('convert-btn');
   console.log("THis was very nuch ran!")
+  console.log('Type....' +type)
   let files;
 
   function uploadFile(e) {
@@ -15,10 +16,6 @@ function init() {
 
 
 
-  
-
-
-
     if (e.target && e.target.files) var file = e.target.files[0];
     else var file = e.dataTransfer.files[0];
     if(!file) return;
@@ -29,13 +26,13 @@ function init() {
       console.log('the result-------------------');
 
       console.log(reader.result);
-          createGLFTAsset(reader.result);
+          createGLFTAsset(reader.result, type);
 
     };
 
     upload = reader.readAsDataURL(file);
     console.log(upload);
-    createGLFTAsset(reader.result);
+//  createGLFTAsset(reader.result, vary);
   
   }
 
@@ -48,7 +45,7 @@ function init() {
   //   $('#convertBtn').classList.remove('invisible');
   // }
 
-  $('#fileInput').on('change', uploadFile);
+  $('#formFile').on('change', uploadFile);
 
  
 }
@@ -66,9 +63,10 @@ function init() {
 			let gltfFiles;
 			let glbFiles;
 			
-			async function createGLFTAsset(uploadedSpace){
+			async function createGLFTAsset(uploadedSpace, type){
         console.log(uploadedSpace);
           console.log('inside gltf creation-----')
+          console.log(type);
 
         let asset = new  GLTFUtils.GLTFAsset({"number": 0, "index": 0});
 				let scene = new GLTFUtils.Scene("");
@@ -111,8 +109,11 @@ function init() {
         node.mesh = mesh;
         console.log(asset);
 				
-				glbFiles = downloadGlb(asset);
         gltfFiles = downloadGltf(asset);
+console.log('The type is ' +type);
+        if(type=='glb'){
+          glbFiles = downloadGlb(asset);
+
         
         glbFiles.then(function(result){
           const arrayBuffer = result;
@@ -122,6 +123,7 @@ function init() {
           a.download = 'file.glb';
           a.click();
         })
+      } else if (type =='gltf'){
 
 				gltfFiles.then(function(result){
 					// console.log("result------");
@@ -136,7 +138,8 @@ function init() {
 				document.body.removeChild(element);	
 				})				
 
-      }
+      } 
+    }
 			
 
 			async function downloadGltf(asset){
