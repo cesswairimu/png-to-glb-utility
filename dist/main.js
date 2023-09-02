@@ -37,7 +37,8 @@ async function createGLFTAsset(uploadedSpace, type){
   node.setScale(0.8, 0.8, 0.8);
   scene.addNode(node);
 
-  const  vertices = [-0.5, 0.0, 0.0, 0.5, 0.0, 0.0, -0.5, 0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 1.0, 0.0, 0.5, 1.0, 0.0, -0.5, 1.5, 0.0, 0.5, 1.5, 0.0, -0.5, 2.0, 0.0, 0.5, 2.0, 0.0];
+  // const  vertices = [-0.5, 0.0, 0.0, 0.5, 0.0, 0.0, -0.5, 0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 1.0, 0.0, 0.5, 1.0, 0.0, -0.5, 1.5, 0.0, 0.5, 1.5, 0.0, -0.5, 2.0, 0.0, 0.5, 2.0, 0.0];
+  const vertices = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0]
   let vertex_hash = [];
   for (let i = 0; i < vertices.length; i += 3) {
     const vertex = new GLTFUtils.Vertex();
@@ -46,7 +47,8 @@ async function createGLFTAsset(uploadedSpace, type){
     vertex.z = vertices[i + 2];
     vertex_hash.push(vertex);
   }
-  var triangles = [0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4, 4, 5, 7, 4, 7, 6, 6, 7, 9, 6, 9, 8];
+  // var triangles = [0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4, 4, 5, 7, 4, 7, 6, 6, 7, 9, 6, 9, 8];
+  var triangles = [0, 1, 2, 2, 3, 0];
     
   const mesh = new GLTFUtils.Mesh();
   const material = new GLTFUtils.Material();
