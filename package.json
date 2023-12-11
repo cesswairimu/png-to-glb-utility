@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cesswairimu/png-to-glb-utility.git"
+    "url": "git+https://github.com/cesswairimu/png-to-glb-utility.git"
   },
   "keywords": [
     "glb",
@@ -26,10 +26,13 @@
     "bootstrap": "^5.2.3",
     "font-awesome": "^4.7.0",
     "gltf-js-utils": "^6.0.0",
-    "jszip": "^3.10.1",
-    "jquery": "^3.7.0"
+    "jquery": "^3.7.0",
+    "jszip": "^3.10.1"
   },
   "devDependencies": {
     "http-server": "^14.1.1"
+  },
+  "directories": {
+    "example": "examples"
   }
 }
