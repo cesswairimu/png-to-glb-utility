@@ -1,5 +1,4 @@
 function init(type='glb') {
-  let files;
 
   function uploadFile(e) {
     
@@ -32,21 +31,24 @@ async function createGLFTAsset(uploadedSpace, type){
 
   // create a node
   let node = new GLTFUtils.Node();
-  node.setTranslation(0.1, 0.2, -3);
-  node.setRotationDegrees(20, 30, -40);
-  node.setScale(0.8, 0.8, 0.8);
+  // node.setTranslation(0.1, 0.2, -3);
+  // node.setRotationDegrees(20, 30, -40);
+  // node.setScale(0.8, 0.8, 0.8);
   scene.addNode(node);
 
-  const  vertices = [-0.5, 0.0, 0.0, 0.5, 0.0, 0.0, -0.5, 0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 1.0, 0.0, 0.5, 1.0, 0.0, -0.5, 1.5, 0.0, 0.5, 1.5, 0.0, -0.5, 2.0, 0.0, 0.5, 2.0, 0.0];
+  const  vertices = [0,0,0,0,0, 1,0,0, 1, 0, 1,1,0,1,1, 0,1,0,0,1 ];
   let vertex_hash = [];
-  for (let i = 0; i < vertices.length; i += 3) {
+  for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
     vertex.x = vertices[i];
-    vertex.y = [i + 1];
+    vertex.y = vertices[i + 1];
     vertex.z = vertices[i + 2];
+    vertex.u = vertices[i + 3]; // texture co-ord
+    vertex.v = vertices[i + 4]; // texture co-ord
     vertex_hash.push(vertex);
   }
-  var triangles = [0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4, 4, 5, 7, 4, 7, 6, 6, 7, 9, 6, 9, 8];
+  var triangles = [0, 1, 2, 2, 3, 0];
+
     
   const mesh = new GLTFUtils.Mesh();
   const material = new GLTFUtils.Material();
