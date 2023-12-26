@@ -36,7 +36,7 @@ async function createGLFTAsset(uploadedSpace, type){
   // node.setScale(0.8, 0.8, 0.8);
   scene.addNode(node);
 
-  const  vertices = [0,0,0,0,0, 1,0,0, 1, 0, 1,1,0,1,1, 0,1,0,0,1 ];
+  const  vertices = [0,0,0,0,0, 1,0,0,1,0, 1,1,0,1,1, 0,1,0,0,1];
   let vertex_hash = [];
   for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
