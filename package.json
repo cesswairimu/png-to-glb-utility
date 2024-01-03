@@ -1,6 +1,6 @@
 {
   "name": "png-to-glb-utility",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert .png files to .glb files in Javascript ",
   "main": "dist/index.html",
   "scripts": {
