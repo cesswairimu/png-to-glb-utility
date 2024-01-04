@@ -12,6 +12,7 @@ function init(type='glb') {
 
     var reader = new FileReader();
     reader.onload = () => {
+      document.querySelector("#display-image").src = reader.result;
       createGLFTAsset(reader.result, type);
     };
     reader.readAsDataURL(file);
@@ -49,7 +50,13 @@ async function createGLFTAsset(uploadedSpace, type){
     
   const mesh = new GLTFUtils.Mesh();
   const material = new GLTFUtils.Material();
-  const texture = new GLTFUtils.Texture(uploadedSpace);
+  let texture ="";
+  try {
+    texture = new GLTFUtils.Texture(uploadedSpace);
+  } catch(err){
+    console.log(err);
+    texture = new GLTFUtils.Texture(await fetchJpgImage());
+  }
   texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
   texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
   material.pbrMetallicRoughness.baseColorTexture = texture;
@@ -104,4 +111,8 @@ async function exportGltf(asset){
 async function exportGlb(asset){
 let files = await GLTFUtils.exportGLB(asset);
 return files;
+}
+
+async function fetchJpgImage(){
+  return document.getElementById("display-image");
 }
