@@ -1,4 +1,6 @@
-function init(type = 'glb') {
+const { AlphaMode } = require("gltf-js-utils");
+
+function init(type = 'gltf') {
 
   function uploadFile(e) {
 
@@ -9,31 +11,48 @@ function init(type = 'glb') {
     if (e.target && e.target.files) var file = e.target.files[0];
     else var file = e.dataTransfer.files[0];
     if (!file) return;
+    let textureImg = document.getElementById('test-image');
 
     var reader = new FileReader();
     reader.onload = () => {
       document.querySelector("#display-image").src = reader.result;
-      createGLFTAsset(reader.result, reader.result, type);
+      createGLFTAsset(reader.result, textureImg, type);
     };
     reader.readAsDataURL(file);
   }
 
-  $('#formFile').on('change', uploadFile);
+  $('#displayInput').on('change', uploadFile);
+  // (//$('#displayInput').on('change') && )
+  // $('#submit').on('click', uploadFile)
 }
+
+
+function prerequisite() {
+  $('#displayInput').on('change', $('#submit').removeAttr('disabled'));
+
+  console.log("Here---")
+}
+
+function enableButton() {
+  $('#submit').removeAttr('disabled');
+}
+$('#submit').on('click', checkInputs)
+
+function checkInputs() {
+  console.log("I checked the inputs");
+
+}
+
 
 async function createGLFTAsset(uploadedSpace, textureImage, type) {
   let repeatTexture = true;
   let doubleSize = false;
 
-  console.log('inside gltf creation-----')
-  console.log('type-----' + type);
-
   let asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
   let scene = new GLTFUtils.Scene("");
   asset.addScene(scene);
-  let node = new GLTFUtils.Node();
+  let node = new GLTFUtils.Node("PngGlb");
   scene.addNode(node);
-
 
   const vertices1 = [[0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 0, 0, 2, 0, 0, 0], [0, 0, 0, 0, 2, 2, 0, 0, 2, 2, 2, 1, 0, 2, 0, 0, 1, 0, 0, 0]]
 
@@ -57,21 +76,35 @@ async function createGLFTAsset(uploadedSpace, textureImage, type) {
   const mesh = new GLTFUtils.Mesh();
   const material = new GLTFUtils.Material();
 
-  let texture = "";
+
+  let baseTexture = "";
   try {
-    texture = new GLTFUtils.Texture(uploadedSpace);
+    baseTexture = new GLTFUtils.Texture(uploadedSpace);
   } catch (err) {
     console.log(err);
-    texture = new GLTFUtils.Texture(await fetchJpgImage());
+    baseTexture = new GLTFUtils.Texture(await fetchJpgImage());
   }
+  let roughnessTexture = new GLTFUtils.Texture(textureImage)
+  repeatTexture || doubleSize ? baseTexture.wrapS = GLTFUtils.WrappingMode.REPEAT : baseTexture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+  baseTexture.wrapT = GLTFUtils.WrappingMode.REPEAT;
+  roughnessTexture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+  roughnessTexture.wrapT = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
 
-  repeatTexture || doubleSize ? texture.wrapS = GLTFUtils.WrappingMode.REPEAT : texture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-
-  texture.wrapT = GLTFUtils.WrappingMode.REPEAT;
-  material.pbrMetallicRoughness.baseColorTexture = texture;
+  material.texture = [baseTexture, roughnessTexture];
+  material.pbrMetallicRoughness.baseColorTexture = baseTexture;
+  material.pbrMetallicRoughness.texture = roughnessTexture;
+  material.pbrMetallicRoughness.roughnessTexture = roughnessTexture;
+  // material.pbrMetallicRoughness = {
+  //   baseColorTexture: { index: 0, texCoord: 0 },
+  //   metallicRoughnessTexture: { index: 1, texCoord: 0 }
+  // };
+  material.roughnessFactor = 1.0;
+  material.metallicFactor = 0.0;
+  material.alphaCutoff = 0.5;
+  material.alphaMode = GLTFUtils.AlphaMode.MASK;
   material.doubleSided = true;
-  material.texture = texture;
-  mesh.material = [material];
+  material.texture = [baseTexture, roughnessTexture]
+  console.log(material);
 
   for (let i = 0; i < triangles.length; i += 3) {
     v1 = vertex_hash[triangles[i]];
@@ -79,11 +112,16 @@ async function createGLFTAsset(uploadedSpace, textureImage, type) {
     v3 = vertex_hash[triangles[i + 2]];
     mesh.addFace(v1, v2, v3, { r: 1, g: 1, b: 1 }, 0);
   }
+  mesh.material = [material];
+  console.log(mesh)
   node.mesh = mesh;
+
   console.log(asset);
 
   if (type == 'glb') {
     let glbFiles = exportGlb(asset);
+    console.log(glbFiles);
+
     glbFiles.then(function (result) {
       const arrayBuffer = result;
       const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
@@ -94,6 +132,7 @@ async function createGLFTAsset(uploadedSpace, textureImage, type) {
     })
   } else if (type == 'gltf') {
     let gltfFiles = exportGltf(asset);
+    console.log(gltfFiles);
 
     gltfFiles.then(function (result) {
       var element = document.createElement('a');
