@@ -1,4 +1,5 @@
-const { AlphaMode } = require("gltf-js-utils");
+let repeatTexture = false;
+let textureImg = "";
 
 function init(type = 'gltf') {
 
@@ -11,42 +12,26 @@ function init(type = 'gltf') {
     if (e.target && e.target.files) var file = e.target.files[0];
     else var file = e.dataTransfer.files[0];
     if (!file) return;
-    let textureImg = document.getElementById('test-image');
 
     var reader = new FileReader();
     reader.onload = () => {
       document.querySelector("#display-image").src = reader.result;
-      createGLFTAsset(reader.result, textureImg, type);
+      createGLFTAsset(reader.result, type);
     };
     reader.readAsDataURL(file);
   }
 
+  $('#textureInput').on('change', uploadTexture);
   $('#displayInput').on('change', uploadFile);
-  // (//$('#displayInput').on('change') && )
-  // $('#submit').on('click', uploadFile)
 }
 
 
-function prerequisite() {
-  $('#displayInput').on('change', $('#submit').removeAttr('disabled'));
-
-  console.log("Here---")
-}
-
-function enableButton() {
-  $('#submit').removeAttr('disabled');
-}
-$('#submit').on('click', checkInputs)
-
-function checkInputs() {
-  console.log("I checked the inputs");
-
-}
-
-
-async function createGLFTAsset(uploadedSpace, textureImage, type) {
-  let repeatTexture = true;
+async function createGLFTAsset(uploadedSpace, type) {
   let doubleSize = false;
+  if ($('#textureRepeat').is(':checked')) {
+    repeatTexture = true
+  }
+  console.log(repeatTexture);
 
   let asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
   let scene = new GLTFUtils.Scene("");
@@ -82,28 +67,36 @@ async function createGLFTAsset(uploadedSpace, textureImage, type) {
     baseTexture = new GLTFUtils.Texture(uploadedSpace);
   } catch (err) {
     console.log(err);
-    baseTexture = new GLTFUtils.Texture(await fetchJpgImage());
+    baseTexture = new GLTFUtils.Texture(await fetchJpgImage("display-image"));
   }
-  let roughnessTexture = new GLTFUtils.Texture(textureImage)
   repeatTexture || doubleSize ? baseTexture.wrapS = GLTFUtils.WrappingMode.REPEAT : baseTexture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
   baseTexture.wrapT = GLTFUtils.WrappingMode.REPEAT;
-  roughnessTexture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-  roughnessTexture.wrapT = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-
-  material.texture = [baseTexture, roughnessTexture];
   material.pbrMetallicRoughness.baseColorTexture = baseTexture;
-  material.pbrMetallicRoughness.texture = roughnessTexture;
-  material.pbrMetallicRoughness.roughnessTexture = roughnessTexture;
-  // material.pbrMetallicRoughness = {
-  //   baseColorTexture: { index: 0, texCoord: 0 },
-  //   metallicRoughnessTexture: { index: 1, texCoord: 0 }
-  // };
+  material.texture = [baseTexture]
+
+
+
+
+  let roughnessTexture = "";
+  if (textureImg != "") {
+    try {
+      roughnessTexture = new GLTFUtils.Texture(textureImg);
+    } catch (err) {
+      console.log(err);
+      roughnessTexture = new GLTFUtils.Texture(await fetchJpgImage("texture-image"));
+    }
+
+    roughnessTexture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+    roughnessTexture.wrapT = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+    material.pbrMetallicRoughness.roughnessTexture = roughnessTexture;
+    material.texture.push(roughnessTexture);
+
+  }
   material.roughnessFactor = 1.0;
   material.metallicFactor = 0.0;
   material.alphaCutoff = 0.5;
   material.alphaMode = GLTFUtils.AlphaMode.MASK;
   material.doubleSided = true;
-  material.texture = [baseTexture, roughnessTexture]
   console.log(material);
 
   for (let i = 0; i < triangles.length; i += 3) {
@@ -147,7 +140,6 @@ async function createGLFTAsset(uploadedSpace, textureImage, type) {
   }
 }
 
-
 async function exportGltf(asset) {
   let files = await GLTFUtils.exportGLTF(asset, {
     bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
@@ -162,6 +154,24 @@ async function exportGlb(asset) {
   return files;
 }
 
-async function fetchJpgImage() {
-  return document.getElementById("display-image");
+async function fetchJpgImage(name) {
+  return document.getElementById(name);
+}
+
+function uploadTexture(e) {
+
+  e.preventDefault();
+  e.stopPropagation();
+  files = e.target.files[0]
+
+  if (e.target && e.target.files) var file = e.target.files[0];
+  else var file = e.dataTransfer.files[0];
+  if (!file) return;
+
+  var reader = new FileReader();
+  reader.onload = () => {
+    document.querySelector("#texture-image").src = reader.result;
+    textureImg = reader.result;
+  };
+  reader.readAsDataURL(file);
 }
