@@ -1,7 +1,4 @@
-let repeatTexture = false;
-let textureImg = "";
-
-function init(type = 'gltf') {
+function init(type = 'glb') {
 
   function uploadFile(e) {
 
@@ -26,24 +23,20 @@ function init(type = 'gltf') {
 }
 
 
+let repeatTexture = false;
+let textureImg = "";
+
 async function createGLFTAsset(uploadedSpace, type) {
   let doubleSize = false;
-  if ($('#textureRepeat').is(':checked')) {
-    repeatTexture = true
-  }
-  console.log(repeatTexture);
+  if ($('#textureRepeat').is(':checked')) { repeatTexture = true }
 
   let asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
   let scene = new GLTFUtils.Scene("");
   asset.addScene(scene);
   let node = new GLTFUtils.Node("PngGlb");
   scene.addNode(node);
-
-  const vertices1 = [[0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 0, 0, 2, 0, 0, 0], [0, 0, 0, 0, 2, 2, 0, 0, 2, 2, 2, 1, 0, 2, 0, 0, 1, 0, 0, 0]]
-
   const vertices = [[0, 0, 0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 0, 0, 2, 0, 0, 0], [0, 0, 0, 0, 1, 4, 0, 0, 1, 1, 4, 4, 0, 1, 0, 0, 4, 0, 0, 0], [0, 0, 0, 0, 4, 4, 0, 0, 4, 4, 4, 4, 0, 4, 0, 0, 4, 0, 0, 0]]
   var meshVertices = repeatTexture ? vertices[2] : doubleSize ? vertices[1] : vertices[0];
-
 
   let vertex_hash = [];
   for (let i = 0; i < meshVertices.length; i += 5) {
@@ -57,10 +50,28 @@ async function createGLFTAsset(uploadedSpace, type) {
   }
   var triangles = [0, 1, 2, 2, 3, 0];
 
-
   const mesh = new GLTFUtils.Mesh();
-  const material = new GLTFUtils.Material();
+  for (let i = 0; i < triangles.length; i += 3) {
+    v1 = vertex_hash[triangles[i]];
+    v2 = vertex_hash[triangles[i + 1]];
+    v3 = vertex_hash[triangles[i + 2]];
+    mesh.addFace(v1, v2, v3, { r: 1, g: 1, b: 1 }, 0);
+  }
 
+  var material = await createMaterial(uploadedSpace);
+  mesh.material = [material];
+  node.mesh = mesh;
+  console.log(asset);
+  if (type == 'glb') {
+    exportGlb(asset);
+  } else if (type == 'gltf') {
+    exportGltf(asset);
+  }
+}
+
+async function createMaterial(uploadedSpace) {
+  let doubleSize = false;
+  const material = new GLTFUtils.Material();
 
   let baseTexture = "";
   try {
@@ -69,13 +80,10 @@ async function createGLFTAsset(uploadedSpace, type) {
     console.log(err);
     baseTexture = new GLTFUtils.Texture(await fetchJpgImage("display-image"));
   }
-  repeatTexture || doubleSize ? baseTexture.wrapS = GLTFUtils.WrappingMode.REPEAT : baseTexture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+  let wrapMode = repeatTexture || doubleSize ? GLTFUtils.WrappingMode.REPEAT : GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+  baseTexture.wrapS = wrapMode;
   baseTexture.wrapT = GLTFUtils.WrappingMode.REPEAT;
   material.pbrMetallicRoughness.baseColorTexture = baseTexture;
-  material.texture = [baseTexture]
-
-
-
 
   let roughnessTexture = "";
   if (textureImg != "") {
@@ -85,59 +93,15 @@ async function createGLFTAsset(uploadedSpace, type) {
       console.log(err);
       roughnessTexture = new GLTFUtils.Texture(await fetchJpgImage("texture-image"));
     }
-
-    roughnessTexture.wrapS = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-    roughnessTexture.wrapT = GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
-    material.pbrMetallicRoughness.roughnessTexture = roughnessTexture;
-    material.texture.push(roughnessTexture);
-
+    roughnessTexture.wrapS = wrapMode;
+    roughnessTexture.wrapT = GLTFUtils.WrappingMode.REPEAT;
+    material.pbrMetallicRoughness.metallicRoughnessTexture = roughnessTexture;
   }
-  material.roughnessFactor = 1.0;
-  material.metallicFactor = 0.0;
-  material.alphaCutoff = 0.5;
-  material.alphaMode = GLTFUtils.AlphaMode.MASK;
+  material.pbrMetallicRoughness.roughnessFactor = 0.5;
+  material.pbrMetallicRoughness.metallicFactor = 0.5;
   material.doubleSided = true;
-  console.log(material);
-
-  for (let i = 0; i < triangles.length; i += 3) {
-    v1 = vertex_hash[triangles[i]];
-    v2 = vertex_hash[triangles[i + 1]];
-    v3 = vertex_hash[triangles[i + 2]];
-    mesh.addFace(v1, v2, v3, { r: 1, g: 1, b: 1 }, 0);
-  }
-  mesh.material = [material];
-  console.log(mesh)
-  node.mesh = mesh;
-
-  console.log(asset);
-
-  if (type == 'glb') {
-    let glbFiles = exportGlb(asset);
-    console.log(glbFiles);
-
-    glbFiles.then(function (result) {
-      const arrayBuffer = result;
-      const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'file.glb';
-      a.click();
-    })
-  } else if (type == 'gltf') {
-    let gltfFiles = exportGltf(asset);
-    console.log(gltfFiles);
-
-    gltfFiles.then(function (result) {
-      var element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' +
-        result['model.gltf']);
-      element.setAttribute('download', "file.gltf");
-      element.style.display = 'none';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-    })
-  }
+  material.pbrMetallicRoughness.metallicRoughnessTexture = roughnessTexture;
+  return material;
 }
 
 async function exportGltf(asset) {
@@ -145,13 +109,24 @@ async function exportGltf(asset) {
     bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
     imageOutputType: GLTFUtils.BufferOutputType.DataURI
   });
-  return files;
-
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + files['model.gltf']);
+  element.setAttribute('download', "file.gltf");
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
 }
 
 async function exportGlb(asset) {
   let files = await GLTFUtils.exportGLB(asset);
-  return files;
+  console.log(files);
+  const arrayBuffer = files;
+  const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'file.glb';
+  a.click();
 }
 
 async function fetchJpgImage(name) {
@@ -159,7 +134,6 @@ async function fetchJpgImage(name) {
 }
 
 function uploadTexture(e) {
-
   e.preventDefault();
   e.stopPropagation();
   files = e.target.files[0]
