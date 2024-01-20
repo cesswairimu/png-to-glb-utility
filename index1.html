@@ -28,7 +28,7 @@
 			<p class="fs-4 text-muted">Upload a JPG or PNG and get a GLB model<br>
 				(see <a href="http://ambientcg.com" class="link-info">ambientcg.com</a> for image sources)
 			</p>
-			<div class="btn-group btn-group-md pb-2">
+			<div class="btn-group btn-group-md pb-3 h-30">
 				<label class="btn btn-outline-secondary">
 					Choose an Image
 					<input type="file" id="fileInput" style="display: none;" accept=".jpg,.png">
@@ -37,12 +37,12 @@
 			</div><br>
 
 			<div class="d-inline-flex w-auto pb-2">
-				<div class="box bg-light rounded" style="height: 150px; width: 150px;">
-					<div class="mt-3 flex-grow-1">
+				<div class="box box-shadow rounded" style="height: 150px; width: 150px;">
+					<!-- <div class="mt-3 flex-grow-1"> -->
 						<img id="imagePreview" class="img-thumbnail" alt="Image Preview">
-					</div>
+					<!-- </div> -->
 				</div>
-				<div class="btn-group btn-group-sm h-25 pt-5">
+				<div class="btn-group btn-group-sm h-25 pt-5 ps-2">
 					<div class="btn btn-outline-secondary disabled">
 						Tile/repeat image by:
 					</div>
@@ -59,7 +59,7 @@
 			</div>
 
 			<div class="row justify-content-center align-items-center w-500">
-				<div id="roughness-section" class="col-8 bg-light text-center p-4 rounded" style="display: none;">
+				<div id="roughness-section" class="col-8 bg-gray-500 text-center p-4 rounded" style="display: none;">
 					<div class="btn-group btn-group-sm pb-2">
 						<!-- <button type="button" class="btn btn-secondary">Choose Texture</button> -->
 						<label class="btn btn-outline-secondary">
@@ -73,7 +73,7 @@
 				</div>
 			</div>
 			<div class="mt-3">
-				<button type="submit" class="btn btn-outline-secondary">Create
+				<button type="submit" class="btn btn-outline-secondary fs-5">Create
 					a Model
 				</button>
 			</div>
