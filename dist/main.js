@@ -1,4 +1,4 @@
-function init(type = 'glb') {
+function init(type = 'gltf') {
 
   function uploadFile(e) {
 
@@ -101,6 +101,12 @@ async function createMaterial(uploadedSpace) {
   material.pbrMetallicRoughness.metallicFactor = 0.5;
   material.doubleSided = true;
   material.pbrMetallicRoughness.metallicRoughnessTexture = roughnessTexture;
+
+  if (normalImg != "") {
+    let normalImg = document.getElementById('test-image');
+    let normalTexture = new GLTFUtils.Texture(normalImg);
+    material.normalTexture = normalTexture;
+  }
   return material;
 }
 
