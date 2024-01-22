@@ -11,5 +11,16 @@
 }
 
 .box-shadow{
-  background-color: #adb5bd ;
+  background-color: #745760 ;
+}
+
+.btn-custom-hover:hover {
+  background-color: #4a90e2; 
+  color: #fff; 
+  border-color: #4a90e2; 
+}
+
+.box-bg {
+  background-color: #757575;
+  /* background: gray; */
 }

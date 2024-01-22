@@ -1,3 +1,118 @@
+let baseImage;
+let textureImage = "";
+let normalImage = "";
+
+function preInputs() {
+  let inputFiles = ['fileInput', 'fileInput1', 'fileInput2']
+  let outputFiles = ['fileNameOutput', 'fileNameOutput1', 'fileNameOutput2']
+
+
+  inputFiles.forEach(function (elem) {
+    var input = document.getElementById(elem);
+    var ouput = document.getElementById(outputFiles[inputFiles.indexOf(elem)]);
+    input.addEventListener("change", (event) => {
+      const fileName = event.target.files[0].name;
+      ouput.value = fileName;
+
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        // console.log(input.name);
+        // input.name.value = e.target.result;
+        // console.log(input.name.value);
+        if (elem == "fileInput") {
+          const previewImage = document.getElementById('imagePreview');
+          previewImage.src = e.target.result;
+
+        }
+      };
+      reader.readAsDataURL(file);
+
+    });
+  });
+
+  // collapse sections
+  const toggleCheckbox = document.getElementById("checkboxRoughness");
+  const collapsibleSection = document.getElementById("roughness-section");
+
+  toggleCheckbox.addEventListener("change", () => {
+    collapsibleSection.style.display = toggleCheckbox.checked ? 'block' : 'none';
+  });
+
+  const normalCheckbox = document.getElementById("normalTexture");
+  const normalSection = document.getElementById("normal-section");
+
+  normalCheckbox.addEventListener("change", () => {
+    normalSection.style.display = normalCheckbox.checked ? 'block' : 'none';
+  });
+
+  // form submission
+  const form = document.getElementById("inputForm");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    console.log('submitting form');
+
+    const formData = new FormData(form);
+    const displayImg = formData.get('fileInput1');
+    const textureImg = formData.get('fileInput2');
+    const normalImg = formData.get('fileInput3');
+
+    console.log(displayImg);
+    console.log(textureImg);
+    console.log(normalImg);
+    console.log(formData.get('repeatImage'))
+
+    const reader = new FileReader();
+    const reader1 = new FileReader();
+    const reader2 = new FileReader();
+
+    reader.readAsDataURL(displayImg);
+    reader1.readAsDataURL(textureImg);
+    reader2.readAsDataURL(normalImg);
+    // console.log(res);
+
+    reader.onload = () => {
+      const uriFile = reader.result;
+      document.querySelector("#display-image").src = reader.result;
+      baseImage = reader.result;
+      console.log("input base");
+      console.log(baseImage);
+    }
+
+    reader1.onload = () => {
+      textureImage = reader1.result;
+      document.querySelector("#texture-image").src = reader1.result;
+      console.log("input texture");
+
+      console.log(textureImage)
+    }
+
+    reader2.onload = () => {
+      normalImage = reader2.result;
+      document.querySelector("#normal-image").src = reader2.result;
+      console.log("input normal");
+      console.log(normalImage);
+    }
+    createGLFTAsset();
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+// --- end  of submit form
+
+
+
+
 function init(type = 'gltf') {
 
   function uploadFile(e) {
@@ -24,9 +139,9 @@ function init(type = 'gltf') {
 
 
 let repeatTexture = false;
-let textureImg = "";
+// let textureImg = "";
 
-async function createGLFTAsset(uploadedSpace, type) {
+async function createGLFTAsset(type = "gltf") {
   let doubleSize = false;
   if ($('#textureRepeat').is(':checked')) { repeatTexture = true }
 
@@ -58,7 +173,7 @@ async function createGLFTAsset(uploadedSpace, type) {
     mesh.addFace(v1, v2, v3, { r: 1, g: 1, b: 1 }, 0);
   }
 
-  var material = await createMaterial(uploadedSpace);
+  var material = await createMaterial();
   mesh.material = [material];
   node.mesh = mesh;
   console.log(asset);
@@ -69,13 +184,13 @@ async function createGLFTAsset(uploadedSpace, type) {
   }
 }
 
-async function createMaterial(uploadedSpace) {
+async function createMaterial() {
   let doubleSize = false;
   const material = new GLTFUtils.Material();
 
   let baseTexture = "";
   try {
-    baseTexture = new GLTFUtils.Texture(uploadedSpace);
+    baseTexture = new GLTFUtils.Texture(baseImage);
   } catch (err) {
     console.log(err);
     baseTexture = new GLTFUtils.Texture(await fetchJpgImage("display-image"));
@@ -86,9 +201,9 @@ async function createMaterial(uploadedSpace) {
   material.pbrMetallicRoughness.baseColorTexture = baseTexture;
 
   let roughnessTexture = "";
-  if (textureImg != "") {
+  if (textureImage != "") {
     try {
-      roughnessTexture = new GLTFUtils.Texture(textureImg);
+      roughnessTexture = new GLTFUtils.Texture(textureImage);
     } catch (err) {
       console.log(err);
       roughnessTexture = new GLTFUtils.Texture(await fetchJpgImage("texture-image"));
@@ -102,9 +217,14 @@ async function createMaterial(uploadedSpace) {
   material.doubleSided = true;
   material.pbrMetallicRoughness.metallicRoughnessTexture = roughnessTexture;
 
-  if (normalImg != "") {
-    let normalImg = document.getElementById('test-image');
-    let normalTexture = new GLTFUtils.Texture(normalImg);
+  let normalTexture = "";
+  if (normalImage != "") {
+    try {
+      normalTexture = new GLTFUtils.Texture(normalImage);
+    } catch (err) {
+      console.log(err);
+      normalTexture = new GLTFUtils.Texture(await fetchJpgImage("normal-image"));
+    }
     material.normalTexture = normalTexture;
   }
   return material;

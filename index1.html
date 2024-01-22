@@ -20,67 +20,89 @@
 
 <body>
 
+	<form action="/" id="inputForm" name="inputForm" method="post">
+		<div class="container d-flex align-items-center justify-content-center h-100">
+			<div class="text-center">
+				<h3 class="fs-2 text-black-50">Create a textured surface</h3>
+				<p class="fs-4 text-muted">Upload a JPG or PNG and get a GLB model<br>
+					(see <a href="http://ambientcg.com" class="link-info">ambientcg.com</a> for image sources)
+				</p>
+				<div class="btn-group btn-group-md pb-3 h-30">
+					<label class="btn btn-outline-secondary">
+						Choose an Image
+						<input type="file" id="fileInput" name="fileInput1" style="display: none;" accept=".jpg,.png">
+					</label>
+					<textarea class="btn btn-outline-secondary" id="fileNameOutput" readonly></textarea>
+				</div><br>
 
-
-	<div class="container d-flex align-items-center justify-content-center h-100">
-		<div class="text-center">
-			<h3 class="fs-2 text-black-50">Create a textured surface</h3>
-			<p class="fs-4 text-muted">Upload a JPG or PNG and get a GLB model<br>
-				(see <a href="http://ambientcg.com" class="link-info">ambientcg.com</a> for image sources)
-			</p>
-			<div class="btn-group btn-group-md pb-3 h-30">
-				<label class="btn btn-outline-secondary">
-					Choose an Image
-					<input type="file" id="fileInput" style="display: none;" accept=".jpg,.png">
-				</label>
-				<textarea class="btn btn-outline-secondary" id="fileNameOutput" readonly></textarea>
-			</div><br>
-
-			<div class="d-inline-flex w-auto pb-2">
-				<div class="box box-shadow rounded" style="height: 150px; width: 150px;">
-					<!-- <div class="mt-3 flex-grow-1"> -->
+				<div class="d-inline-flex w-auto pb-2">
+					<div class="box rounded box-bg" style="height: 150px; width: 150px;">
+						<!-- <div class="mt-3 flex-grow-1"> -->
 						<img id="imagePreview" class="img-thumbnail" alt="Image Preview">
-					<!-- </div> -->
-				</div>
-				<div class="btn-group btn-group-sm h-25 pt-5 ps-2">
-					<div class="btn btn-outline-secondary disabled">
-						Tile/repeat image by:
+						<!-- </div> -->
 					</div>
-					<input type="number" min="1" max="10" class="btn btn-outline-secondary">
-				</div>
-			</div>
-
-			<div class="mt-10 pl-10 flex items-center">
-				<label class="items-center cursor-pointer">
-					<input type="checkbox" id="checkboxRoughness"
-						class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-					<span class="ml-2 text-sm font-medium text-gray-700">Add roughness</span>
-				</label>
-			</div>
-
-			<div class="row justify-content-center align-items-center w-500">
-				<div id="roughness-section" class="col-8 bg-gray-500 text-center p-4 rounded" style="display: none;">
-					<div class="btn-group btn-group-sm pb-2">
-						<!-- <button type="button" class="btn btn-secondary">Choose Texture</button> -->
-						<label class="btn btn-outline-secondary">
-							Choose a Texture
-							<input type="file" id="fileInput1" style="display: none;" accept=".jpg,.png">
-						</label>
-						<textarea class="btn btn-outline-secondary" id="fileName1Output" readonly></textarea>
+					<div class="btn-group btn-group-md h-25 pt-5 ps-2">
+						<div class="btn btn-outline-secondary disabled">
+							Tile/repeat image by:
+						</div>
+						<input type="number" min="1" max="10" value="1" class="btn btn-outline-secondary" name="repeatImage">
 					</div>
-					<!-- <input type="file" hidden> -->
-					<p class="mt-3">The texture image will be used as roughness and will scale/tile with the original image..</p>
 				</div>
-			</div>
-			<div class="mt-3">
-				<button type="submit" class="btn btn-outline-secondary fs-5">Create
-					a Model
-				</button>
-			</div>
 
+				<div class="mt-10 pl-10 flex items-center">
+					<label class="items-center cursor-pointer">
+						<input type="checkbox" id="checkboxRoughness"
+							class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+						<span class="ml-2 text-sm font-medium text-gray-700 fs-5 text-muted">Add roughness texture</span>
+					</label>
+				</div>
 
+				<div class="row justify-content-center align-items-center w-500">
+					<div id="roughness-section" class="col-4 bg-gray-500 text-center p-4 rounded box-bg" style="display: none;">
+						<div class="btn-group btn-group-sm pb-2">
+							<label class="btn btn-outline-secondary">
+								Choose a Texture
+								<input type="file" id="fileInput1" name="fileInput2" style="display: none;" accept=".jpg,.png">
+							</label>
+							<textarea class="btn btn-outline-secondary" id="fileNameOutput1" readonly></textarea>
+						</div>
+						<p class="mt-3">The texture image will be used as roughness and will scale/tile with the original image..
+						</p>
+					</div>
+				</div>
+
+				<div class="mt-10 pl-10 flex items-center">
+					<label class="items-center cursor-pointer">
+						<input type="checkbox" id="normalTexture"
+							class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+						<span class="ml-2 font-medium text-gray-700 fs-5 text-muted">Add a normal texture</span>
+					</label>
+				</div>
+				<div class="row justify-content-center align-items-center w-500">
+					<div id="normal-section" class="col-4 bg-gray-500 text-center p-4 rounded box-bg" style="display: none;">
+						<div class="btn-group btn-group-sm pb-2">
+							<label class="btn btn-outline-secondary text-secondary">
+								Choose a normal Texture
+								<input type="file" id="fileInput2" name="fileInput3" style="display: none;" accept=".jpg,.png">
+							</label>
+							<textarea class="btn btn-outline-secondary" id="fileNameOutput2"  readonly></textarea>
+						</div>
+						<p class="mt-3">The normal image will help stimulate the fine surface detail of the base image..
+						</p>
+					</div>
+				</div>
+				<div class="mt-3">
+					<button type="submit" class="btn btn-outline-info fs-5" onclick="">Create
+						a Model
+					</button>
+				</div>
+				<img id="display-image" height="800" width="1000" class="invisible">
+				<img id="texture-image" height="800" width="1000" class="invisible">
+				<img id="normal-image" height="800" width="1000" class="invisible">
+				<!-- <img id="test-image" height="800" width="1000" class="invisible" src="examples/wood.png"> -->
+			</div>
 		</div>
-	</div>
+	</form>
 
 
 	<div class="container center">
@@ -123,34 +145,127 @@
 	</div>
 
 	<script>
+		// let displayUri;
+		// let textureUri;
+		// let normalUri;
+				// let InputNames = []
 
-		const fileInput = document.getElementById('fileInput');
-		const fileNameOutput = document.getElementById('fileNameOutput');
-
-		fileInput.addEventListener('change', (event) => {
-			const fileName = event.target.files[0].name;
-			fileNameOutput.value = fileName;
-
-			const file = event.target.files[0];
-			const reader = new FileReader();
-
-			reader.onload = (e) => {
-				const previewImage = document.getElementById('imagePreview');
-				previewImage.src = e.target.result;
-			};
-
-			reader.readAsDataURL(file);
-		});
+		// let inputFiles = ['fileInput', 'fileInput1', 'fileInput2']
+		// let outputFiles = ['fileNameOutput', 'fileNameOutput1', 'fileNameOutput2']
 
 
-		const toggleCheckbox = document.getElementById("checkboxRoughness");
-		const collapsibleSection = document.getElementById("roughness-section");
+		// inputFiles.forEach(function (elem) {
+		// 	var input = document.getElementById(elem);
+		// 	var ouput = document.getElementById(outputFiles[inputFiles.indexOf(elem)]);
+		// 	input.addEventListener("change", (event) => {
+		// 		const fileName = event.target.files[0].name;
+		// 		ouput.value = fileName;
 
-		toggleCheckbox.addEventListener("change", () => {
-			collapsibleSection.style.display = toggleCheckbox.checked ? 'block' : 'none';
-		});
+		// 		const file = event.target.files[0];
+		// 		const reader = new FileReader();
 
-		init();
+		// 		reader.onload = (e) => {
+		// 			if (elem == "fileInput") {
+		// 				const previewImage = document.getElementById('imagePreview');
+		// 				previewImage.src = e.target.result;
+
+		// 			}
+		// 		};
+		// 		reader.readAsDataURL(file);
+
+		// 	});
+		// });
+
+
+
+		// const fileInput = document.getElementById('fileInput');
+		// const fileNameOutput = document.getElementById('fileNameOutput');
+
+		// fileInput.addEventListener('change', (event) => {
+		// 	const fileName = event.target.files[0].name;
+		// 	console.log(event.target.files[0]);
+		// 	fileNameOutput.value = fileName;
+		// 	let displayImg = document.getElementById('display-image')
+		// 	displayImg.src = event.target.src;
+
+		// 	const file = event.target.files[0];
+		// 	const reader = new FileReader();
+
+		// 	reader.onload = (e) => {
+		// 		const previewImage = document.getElementById('imagePreview');
+		// 		previewImage.src = e.target.result;
+		// 		displayImg.src = e.target.result
+		// 		displayUri = e.target.result;
+		// 	};
+
+		// 	reader.readAsDataURL(file);
+		// });
+
+		// const fileInput1 = document.getElementById('fileInput1');
+		// const fileNameOutput1 = document.getElementById('fileNameOutput1');
+
+		// fileInput1.addEventListener('change', (event) => {
+		// 	const fileName1 = event.target.files[0].name;
+		// 	fileNameOutput1.value = fileName1;
+
+		// 	const file = event.target.files[0];
+		// 	const reader = new FileReader();
+		// 	let textureImg = document.getElementById('display-image')
+		// 	textureImg.src = event.target.files[0].src;
+
+		// 	// reader.onload = (e) => {
+		// 	// 	const previewImage1 = document.getElementById('imagePreview1');
+		// 	// 	previewImage1.src = e.target.result;
+		// 	// };
+
+		// 	reader.readAsDataURL(file);
+		// });
+
+
+		// const fileInput2 = document.getElementById('fileInput2');
+		// const fileNameOutput2 = document.getElementById('fileNameOutput2');
+
+		// fileInput2.addEventListener('change', (event) => {
+		// 	const fileName2 = event.target.files[0].name;
+		// 	fileNameOutput2.value = fileName2;
+
+		// 	const file = event.target.files[0];
+		// 	const reader = new FileReader();
+		// 	let normalImg = document.getElementById('display-image')
+		// 	normalImg.src = event.target.files[0].src;
+
+		// 	// reader.onload = (e) => {
+		// 	// 	const previewImage2 = document.getElementById('imagePreview2');
+		// 	// 	previewImage.src = e.target.result;
+		// 	// };
+
+		// 	reader.readAsDataURL(file);
+		// });
+
+
+
+		// const toggleCheckbox = document.getElementById("checkboxRoughness");
+		// const collapsibleSection = document.getElementById("roughness-section");
+
+		// toggleCheckbox.addEventListener("change", () => {
+		// 	collapsibleSection.style.display = toggleCheckbox.checked ? 'block' : 'none';
+		// });
+
+		// const normalCheckbox = document.getElementById("normalTexture");
+		// const normalSection = document.getElementById("normal-section");
+
+		// normalCheckbox.addEventListener("change", () => {
+		// 	normalSection.style.display = normalCheckbox.checked ? 'block' : 'none';
+		// });
+
+		// function submitForm() {
+		// 	console.log('submitting')
+		// 	document.getElementById("inputs").submit();
+
+
+		// }
+  preInputs();
+		// init();
 	</script>
 </body>
 
