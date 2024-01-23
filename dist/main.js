@@ -1,11 +1,27 @@
-let baseImage;
+let baseImage = "";
 let textureImage = "";
 let normalImage = "";
 
 function preInputs() {
+
+  // collapse sections
+  const toggleCheckbox = document.getElementById("checkboxRoughness");
+  const collapsibleSection = document.getElementById("roughness-section");
+
+  toggleCheckbox.addEventListener("change", () => {
+    collapsibleSection.style.display = toggleCheckbox.checked ? 'block' : 'none';
+  });
+
+  const normalCheckbox = document.getElementById("normalTexture");
+  const normalSection = document.getElementById("normal-section");
+
+  normalCheckbox.addEventListener("change", () => {
+    normalSection.style.display = normalCheckbox.checked ? 'block' : 'none';
+  });
+
+  // display uploads
   let inputFiles = ['fileInput', 'fileInput1', 'fileInput2']
   let outputFiles = ['fileNameOutput', 'fileNameOutput1', 'fileNameOutput2']
-
 
   inputFiles.forEach(function (elem) {
     var input = document.getElementById(elem);
@@ -32,76 +48,66 @@ function preInputs() {
     });
   });
 
-  // collapse sections
-  const toggleCheckbox = document.getElementById("checkboxRoughness");
-  const collapsibleSection = document.getElementById("roughness-section");
 
-  toggleCheckbox.addEventListener("change", () => {
-    collapsibleSection.style.display = toggleCheckbox.checked ? 'block' : 'none';
-  });
 
-  const normalCheckbox = document.getElementById("normalTexture");
-  const normalSection = document.getElementById("normal-section");
-
-  normalCheckbox.addEventListener("change", () => {
-    normalSection.style.display = normalCheckbox.checked ? 'block' : 'none';
-  });
-
+  // form.addEventListener("submit", (e)
+  // }
   // form submission
+  // function outer(){
+  // async function submitForm(e) {
   const form = document.getElementById("inputForm");
-  form.addEventListener("submit", (e) => {
+  // let baseImage = "";
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    console.log('submitting form');
+
+    console.log('Submitting form');
 
     const formData = new FormData(form);
     const displayImg = formData.get('fileInput1');
     const textureImg = formData.get('fileInput2');
     const normalImg = formData.get('fileInput3');
+    const repeatImage = formData.get('repeatImage');
 
-    console.log(displayImg);
-    console.log(textureImg);
-    console.log(normalImg);
-    console.log(formData.get('repeatImage'))
+    console.log(displayImg, textureImg, normalImg, repeatImage);
 
+    // Read all files concurrently using Promise.all
+    await Promise.all([
+      readFileAsDataURL(displayImg),
+      readFileAsDataURL(textureImg),
+      readFileAsDataURL(normalImg)
+    ]).then(([baseImage, textureImage, normalImage]) => {
+      // Update image sources and create GLTF asset after all files are read
+      document.querySelector("#display-image").src = baseImage;
+      document.querySelector("#texture-image").src = textureImage;
+      document.querySelector("#normal-image").src = normalImage;
+
+      console.log('Calling createGLTFAsset ---');
+      createGLFTAsset(baseImage, textureImage, normalImage);
+    });
+    // });
+
+  });
+  // $("#inputForm").addEventListener("submit", submitForm())
+}
+
+function readFileAsDataURL(file) {
+  console.log("Inside RFADU");
+  console.log(file)
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    const reader1 = new FileReader();
-    const reader2 = new FileReader();
-
-    reader.readAsDataURL(displayImg);
-    reader1.readAsDataURL(textureImg);
-    reader2.readAsDataURL(normalImg);
-    // console.log(res);
-
-    reader.onload = () => {
-      const uriFile = reader.result;
-      document.querySelector("#display-image").src = reader.result;
-      baseImage = reader.result;
-      console.log("input base");
-      console.log(baseImage);
-    }
-
-    reader1.onload = () => {
-      textureImage = reader1.result;
-      document.querySelector("#texture-image").src = reader1.result;
-      console.log("input texture");
-
-      console.log(textureImage)
-    }
-
-    reader2.onload = () => {
-      normalImage = reader2.result;
-      document.querySelector("#normal-image").src = reader2.result;
-      console.log("input normal");
-      console.log(normalImage);
-    }
-    createGLFTAsset();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
 
 
 
 
+function assignImages(form) {
 
+  return [baseImage, textureImage, normalImage];
+}
 
 
 
@@ -141,7 +147,11 @@ function init(type = 'gltf') {
 let repeatTexture = false;
 // let textureImg = "";
 
-async function createGLFTAsset(type = "gltf") {
+async function createGLFTAsset(uploadedSpace, textureImage = "", normalImage = "", type = "gltf") {
+  console.log("inside create gltf --- ");
+  console.log(uploadedSpace);
+  console.log(textureImage);
+
   let doubleSize = false;
   if ($('#textureRepeat').is(':checked')) { repeatTexture = true }
 
@@ -173,7 +183,9 @@ async function createGLFTAsset(type = "gltf") {
     mesh.addFace(v1, v2, v3, { r: 1, g: 1, b: 1 }, 0);
   }
 
-  var material = await createMaterial();
+  var material = await createMaterial(uploadedSpace, textureImage, normalImage);
+  console.log("material--")
+  console.log(material);
   mesh.material = [material];
   node.mesh = mesh;
   console.log(asset);
@@ -184,13 +196,19 @@ async function createGLFTAsset(type = "gltf") {
   }
 }
 
-async function createMaterial() {
+async function createMaterial(uploadedSpace, textureImage, normalImage) {
   let doubleSize = false;
   const material = new GLTFUtils.Material();
+  console.log('Inside create material');
+  // console.log(baseImage);
+  console.log(textureImage);
+  console.log(normalImage);
 
   let baseTexture = "";
+  let base = document.getElementById('display-image');
+  console.log(base.src)
   try {
-    baseTexture = new GLTFUtils.Texture(baseImage);
+    baseTexture = new GLTFUtils.Texture(uploadedSpace);
   } catch (err) {
     console.log(err);
     baseTexture = new GLTFUtils.Texture(await fetchJpgImage("display-image"));
@@ -201,7 +219,7 @@ async function createMaterial() {
   material.pbrMetallicRoughness.baseColorTexture = baseTexture;
 
   let roughnessTexture = "";
-  if (textureImage != "") {
+  if (textureImage != "data:application/octet-stream;base64,") {
     try {
       roughnessTexture = new GLTFUtils.Texture(textureImage);
     } catch (err) {
@@ -218,7 +236,7 @@ async function createMaterial() {
   material.pbrMetallicRoughness.metallicRoughnessTexture = roughnessTexture;
 
   let normalTexture = "";
-  if (normalImage != "") {
+  if (normalImage != "data:application/octet-stream;base64,") {
     try {
       normalTexture = new GLTFUtils.Texture(normalImage);
     } catch (err) {
