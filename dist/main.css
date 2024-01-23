@@ -9,3 +9,12 @@
   height: auto;
   display: block;
 }
+
+.box-shadow{
+  background-color: #303133;
+}
+
+.box-bg {
+  background-color: #E5E4E2;
+  /* background: gray; */
+}
