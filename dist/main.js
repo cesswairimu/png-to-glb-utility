@@ -1,156 +1,67 @@
-let baseImage = "";
-let textureImage = "";
-let normalImage = "";
-
-function preInputs() {
-
-  // collapse sections
-  const toggleCheckbox = document.getElementById("checkboxRoughness");
-  const collapsibleSection = document.getElementById("roughness-section");
-
-  toggleCheckbox.addEventListener("change", () => {
-    collapsibleSection.style.display = toggleCheckbox.checked ? 'block' : 'none';
-  });
-
-  const normalCheckbox = document.getElementById("normalTexture");
-  const normalSection = document.getElementById("normal-section");
-
-  normalCheckbox.addEventListener("change", () => {
-    normalSection.style.display = normalCheckbox.checked ? 'block' : 'none';
-  });
+function init() {
+  toggleSection("checkboxRoughness", "roughness-section");
+  toggleSection("normalTexture", "normal-section");
 
   // display uploads
-  let inputFiles = ['fileInput', 'fileInput1', 'fileInput2']
-  let outputFiles = ['fileNameOutput', 'fileNameOutput1', 'fileNameOutput2']
-
-  inputFiles.forEach(function (elem) {
-    var input = document.getElementById(elem);
-    var ouput = document.getElementById(outputFiles[inputFiles.indexOf(elem)]);
+  const inputFiles = ['fileInput', 'fileInput1', 'fileInput2'];
+  const outputFiles = ['fileNameOutput', 'fileNameOutput1', 'fileNameOutput2'];
+  inputFiles.forEach((elem) => {
+    const input = document.getElementById(elem);
+    const output = document.getElementById(outputFiles[inputFiles.indexOf(elem)]);
     input.addEventListener("change", (event) => {
       const fileName = event.target.files[0].name;
-      ouput.value = fileName;
-
+      output.value = fileName;
       const file = event.target.files[0];
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        // console.log(input.name);
-        // input.name.value = e.target.result;
-        // console.log(input.name.value);
-        if (elem == "fileInput") {
-          const previewImage = document.getElementById('imagePreview');
-          previewImage.src = e.target.result;
-
+        if (elem === "fileInput") {
+          document.getElementById('imagePreview').src = e.target.result;
+          $("#submitBtn").removeClass("disabled");
         }
       };
       reader.readAsDataURL(file);
-
     });
   });
 
-
-
-  // form.addEventListener("submit", (e)
-  // }
-  // form submission
-  // function outer(){
-  // async function submitForm(e) {
+//submit form
   const form = document.getElementById("inputForm");
-  // let baseImage = "";
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    console.log('Submitting form');
-
-    const formData = new FormData(form);
-    const displayImg = formData.get('fileInput1');
-    const textureImg = formData.get('fileInput2');
-    const normalImg = formData.get('fileInput3');
-    const repeatImage = formData.get('repeatImage');
-
-    console.log(displayImg, textureImg, normalImg, repeatImage);
-
-    // Read all files concurrently using Promise.all
-    await Promise.all([
-      readFileAsDataURL(displayImg),
-      readFileAsDataURL(textureImg),
-      readFileAsDataURL(normalImg)
-    ]).then(([baseImage, textureImage, normalImage]) => {
-      // Update image sources and create GLTF asset after all files are read
-      document.querySelector("#display-image").src = baseImage;
-      document.querySelector("#texture-image").src = textureImage;
-      document.querySelector("#normal-image").src = normalImage;
-
-      console.log('Calling createGLTFAsset ---');
-      createGLFTAsset(baseImage, textureImage, normalImage);
-    });
-    // });
-
-  });
-  // $("#inputForm").addEventListener("submit", submitForm())
-}
-
-function readFileAsDataURL(file) {
-  console.log("Inside RFADU");
-  console.log(file)
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-
-
-
-function assignImages(form) {
-
-  return [baseImage, textureImage, normalImage];
-}
-
-
-
-
-
-
-// --- end  of submit form
-
-
-
-
-function init(type = 'gltf') {
-
-  function uploadFile(e) {
-
-    e.preventDefault();
     e.stopPropagation();
-    files = e.target.files[0]
+    submitForm(form)
 
-    if (e.target && e.target.files) var file = e.target.files[0];
-    else var file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    var reader = new FileReader();
-    reader.onload = () => {
-      document.querySelector("#display-image").src = reader.result;
-      createGLFTAsset(reader.result, type);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  $('#textureInput').on('change', uploadTexture);
-  $('#displayInput').on('change', uploadFile);
+    form.reset();
+    resetForm();
+  });
 }
 
 
-let repeatTexture = false;
-// let textureImg = "";
+async function submitForm(form) {
+  const formData = new FormData(form);
+  const displayImg = formData.get('fileInput1');
+  const textureImg = formData.get('fileInput2');
+  const normalImg = formData.get('fileInput3');
+  const repeatImage = formData.get('repeatImage');
 
+  await Promise.all([
+    readFileAsDataURL(displayImg),
+    readFileAsDataURL(textureImg),
+    readFileAsDataURL(normalImg)
+  ]).then(([baseImage, textureImage, normalImage]) => {
+    document.querySelector("#display-image").src = baseImage;
+    document.querySelector("#texture-image").src = textureImage;
+    document.querySelector("#normal-image").src = normalImage;
+
+    // console.log('Calling createGLTFAsset ---');
+    createGLFTAsset(baseImage, textureImage, normalImage, "glb");
+  });
+}
+let repeatTexture = false;
 async function createGLFTAsset(uploadedSpace, textureImage = "", normalImage = "", type = "gltf") {
-  console.log("inside create gltf --- ");
-  console.log(uploadedSpace);
-  console.log(textureImage);
+  // console.log("inside create gltf --- ");
+  // console.log(uploadedSpace);
+  // console.log(textureImage);
 
   let doubleSize = false;
   if ($('#textureRepeat').is(':checked')) { repeatTexture = true }
@@ -184,8 +95,8 @@ async function createGLFTAsset(uploadedSpace, textureImage = "", normalImage = "
   }
 
   var material = await createMaterial(uploadedSpace, textureImage, normalImage);
-  console.log("material--")
-  console.log(material);
+  // console.log("material--")
+  // console.log(material);
   mesh.material = [material];
   node.mesh = mesh;
   console.log(asset);
@@ -199,14 +110,9 @@ async function createGLFTAsset(uploadedSpace, textureImage = "", normalImage = "
 async function createMaterial(uploadedSpace, textureImage, normalImage) {
   let doubleSize = false;
   const material = new GLTFUtils.Material();
-  console.log('Inside create material');
-  // console.log(baseImage);
-  console.log(textureImage);
-  console.log(normalImage);
 
   let baseTexture = "";
   let base = document.getElementById('display-image');
-  console.log(base.src)
   try {
     baseTexture = new GLTFUtils.Texture(uploadedSpace);
   } catch (err) {
@@ -264,7 +170,6 @@ async function exportGltf(asset) {
 
 async function exportGlb(asset) {
   let files = await GLTFUtils.exportGLB(asset);
-  console.log(files);
   const arrayBuffer = files;
   const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
   const a = document.createElement('a');
@@ -277,19 +182,26 @@ async function fetchJpgImage(name) {
   return document.getElementById(name);
 }
 
-function uploadTexture(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  files = e.target.files[0]
+function resetForm() {
+  document.getElementById('imagePreview').src = "";
+  $("#submitBtn").addClass("disabled");
 
-  if (e.target && e.target.files) var file = e.target.files[0];
-  else var file = e.dataTransfer.files[0];
-  if (!file) return;
+}
 
-  var reader = new FileReader();
-  reader.onload = () => {
-    document.querySelector("#texture-image").src = reader.result;
-    textureImg = reader.result;
-  };
-  reader.readAsDataURL(file);
+function toggleSection(checkboxId, sectionId) {
+  const checkbox = document.getElementById(checkboxId);
+  const section = document.getElementById(sectionId);
+
+  checkbox.addEventListener("change", () => {
+    section.style.display = checkbox.checked ? 'block' : 'none';
+  });
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }

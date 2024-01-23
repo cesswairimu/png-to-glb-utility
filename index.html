@@ -10,7 +10,6 @@
 	<script src="https://cesswairimu.github.io/glTF-js-utils/dist/gltfjsutils.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap.min.js"></script>
-	<!-- <script src="node_modules/gltf-js-utils/dist/gltfjsutils.js"></script> -->
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
 
@@ -19,48 +18,90 @@
 </head>
 
 <body>
-	<div class="container center">
-		<h3> An image to gltf converter</h3>
-
-		<div class="container-fluid">
-			<p class="mt-3">[optional] Upload an image to use as the roughness texture of the plane </p>
-			<div class="input-group mb-3">
-				<input type="file" class="form-control" id="textureInput" accept="image/png, image/jpeg">
-				<button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Upload Texture
-					Image</button>
+		<form id="inputForm" name="inputForm" method="post">
+			<div class="container d-flex align-items-center justify-content-center h-100">
+				<div class="text-center">
+					<h3 class="fs-2 text-black-50">Create a textured surface</h3>
+					<p class="fs-4 text-muted">Upload a JPG or PNG and get a GLB model<br>
+						(see <a href="http://ambientcg.com" class="link-info">ambientcg.com</a> for image sources)
+					</p>
+					<div class="btn-group btn-group-md pb-3 h-30">
+						<label class="btn btn-outline-secondary">
+							Choose an Image
+							<input type="file" id="fileInput" name="fileInput1" style="display: none;" accept=".jpg,.png">
+						</label>
+						<textarea class="btn btn-outline-secondary" id="fileNameOutput" name="preview" readonly></textarea>
+					</div><br>
+		
+					<div class="d-inline-flex w-auto pb-2">
+						<div class="box rounded box-bg" style="height: 150px; width: 150px;">
+							<!-- <div class="mt-3 flex-grow-1"> -->
+							<img id="imagePreview" class="img-thumbnail" alt="Image Preview">
+							<!-- </div> -->
+						</div>
+						<div class="btn-group btn-group-md h-25 pt-5 ps-2">
+							<div class="btn btn-outline-secondary disabled">
+								Tile/repeat image by:
+							</div>
+							<input type="number" min="1" max="10" value="1" class="btn btn-outline-secondary" name="repeatImage">
+						</div>
+					</div>
+		
+					<div class="mt-10 pl-10 flex items-center">
+						<label class="items-center cursor-pointer">
+							<input type="checkbox" id="checkboxRoughness"
+								class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+							<span class="ml-2 text-sm font-medium text-gray-700 fs-5 text-muted">Add roughness texture</span>
+						</label>
+					</div>
+		
+					<div class="row justify-content-center align-items-center w-500">
+						<div id="roughness-section" class="col-4 bg-gray-500 text-center p-4 rounded box-bg" style="display: none;">
+							<div class="btn-group btn-group-sm pb-2">
+								<label class="btn btn-outline-secondary">
+									Choose a Texture
+									<input type="file" id="fileInput1" name="fileInput2" style="display: none;" accept=".jpg,.png">
+								</label>
+								<textarea class="btn btn-outline-secondary" id="fileNameOutput1" readonly></textarea>
+							</div>
+							<p class="mt-3">The texture image will be used as roughness and will scale/tile with the original image..
+							</p>
+						</div>
+					</div>
+		
+					<div class="mt-10 pl-10 flex items-center">
+						<label class="items-center cursor-pointer">
+							<input type="checkbox" id="normalTexture"
+								class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+							<span class="ml-2 font-medium text-gray-700 fs-5 text-muted">Add a normal texture</span>
+						</label>
+					</div>
+					<div class="row justify-content-center align-items-center w-500">
+						<div id="normal-section" class="col-4 bg-gray-500 text-center p-4 rounded box-bg" style="display: none;">
+							<div class="btn-group btn-group-sm pb-2">
+								<label class="btn btn-outline-secondary text-secondary">
+									Choose a normal Texture
+									<input type="file" id="fileInput2" name="fileInput3" style="display: none;" accept=".jpg,.png">
+								</label>
+								<textarea class="btn btn-outline-secondary" id="fileNameOutput2" readonly></textarea>
+							</div>
+							<p class="mt-3">The normal image will help stimulate the fine surface detail of the base image..
+							</p>
+						</div>
+					</div>
+					<div class="mt-3">
+						<button type="submit" id="submitBtn" class="btn btn-outline-info fs-5 disabled" onclick="">Create
+							a Model
+						</button>
+					</div>
+					<img id="display-image" height="800" width="1000" class="invisible">
+					<img id="texture-image" height="800" width="1000" class="invisible">
+					<img id="normal-image" height="800" width="1000" class="invisible">
+				</div>
 			</div>
-			<div class="form-check form-switch">
-				<input class="form-check-input" type="checkbox" role="switch" id="textureRepeat" name="repeat" value="">
-
-				<label class="form-check-label" for="textureRepeat"> Check to repeat texture or leave unchecked to wrap the
-					image to the whole plane</label>
-			</div>
-			<br>
-			<p class="mt-3"> Choose a image(png or jpg) file to create a gltf asset using the image and download it as .glb
-			</p>
-			<div class="input-group mb-3">
-				<input type="file" class="form-control" id="displayInput" aria-describedby="inputGroupFileAddon04"
-					aria-label="Upload" accept="image/png, image/jpeg">
-				<button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Upload Image</button>
-			</div><br>
-			<!-- <div class="form-check form-switch">
-				<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
-				<label class="form-check-label" for="flexSwitchCheckChecked">Double Sized</label> <br>
-			</div> -->
-			<!-- <div class="mt-3">
-				<button class="btn btn-outline-primary btn-lg" type="submit" id="submit" disabled="disabled">Create a
-					gltf</button>
-			</div> -->
-			<!-- </form> -->
-			<img id="display-image" height="800" width="1000" class="invisible">
-			<img id="texture-image" height="800" width="1000" class="invisible">
-			<img id="test-image" height="800" width="1000" class="invisible" src="examples/wood.png">
-		</div>
-	</div>
-
-	<script>
-		init();
-	</script>
+		</form>
+		<script>
+			init();
+		</script>
 </body>
-
 </html>
