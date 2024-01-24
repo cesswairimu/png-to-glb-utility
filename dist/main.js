@@ -53,12 +53,12 @@ async function submitForm(form) {
     document.querySelector("#texture-image").src = textureImage;
     document.querySelector("#normal-image").src = normalImage;
 
-    createGLFTAsset([baseImage, textureImage, normalImage], repeatImage, "glb");
+    createGLFTAsset(baseImage, textureImage, normalImage, repeatImage);
   });
 }
 
 let repeatTexture = false;
-async function createGLFTAsset(textures, repeatImage, type = "gltf") {
+async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage, type = "glb") {
   repeatTexture = repeatImage > 1;
 
   // create GLTF asset, scene and node
@@ -97,7 +97,7 @@ async function createGLFTAsset(textures, repeatImage, type = "gltf") {
   }
 
   // create material
-  const material = await createMaterial(textures);
+  const material = await createMaterial(baseImage, textureImage, normalImage);
   mesh.material = [material];
   node.mesh = mesh;
   console.log(asset);
@@ -110,13 +110,13 @@ async function createGLFTAsset(textures, repeatImage, type = "gltf") {
   }
 }
 
-async function createMaterial(textures) {
+async function createMaterial(baseImage, textureImage, normalImage) {
   const material = new GLTFUtils.Material();
 
   // Base texture handling
   let baseTexture = "";
   try {
-    baseTexture = new GLTFUtils.Texture(textures[0]);
+    baseTexture = new GLTFUtils.Texture(baseImage);
   } catch (err) {
     console.log(err);
     baseTexture = new GLTFUtils.Texture(await fetchJpgImage("display-image"));
@@ -128,9 +128,9 @@ async function createMaterial(textures) {
 
   // Roughness texture handling
   let roughnessTexture = "";
-  if (textures[1] != "data:application/octet-stream;base64,") {
+  if (textureImage != "data:application/octet-stream;base64,") {
     try {
-      roughnessTexture = new GLTFUtils.Texture(textures[1]);
+      roughnessTexture = new GLTFUtils.Texture(textureImage);
     } catch (err) {
       console.log(err);
       roughnessTexture = new GLTFUtils.Texture(await fetchJpgImage("texture-image"));
@@ -142,9 +142,9 @@ async function createMaterial(textures) {
 
   // Normal texture handling
   let normalTexture = "";
-  if (textures[2] != "data:application/octet-stream;base64,") {
+  if (normalImage != "data:application/octet-stream;base64,") {
     try {
-      normalTexture = new GLTFUtils.Texture(textures[2]);
+      normalTexture = new GLTFUtils.Texture(normalImage);
     } catch (err) {
       console.log(err);
       normalTexture = new GLTFUtils.Texture(await fetchJpgImage("normal-image"));
