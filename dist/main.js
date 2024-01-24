@@ -24,7 +24,6 @@ function init() {
     });
   });
 
-//submit form
   const form = document.getElementById("inputForm");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -36,13 +35,14 @@ function init() {
   });
 }
 
-
+//submit form
 async function submitForm(form) {
   const formData = new FormData(form);
   const displayImg = formData.get('fileInput1');
   const textureImg = formData.get('fileInput2');
   const normalImg = formData.get('fileInput3');
   const repeatImage = formData.get('repeatImage');
+  console.log("Tile image by", repeatImage);
 
   await Promise.all([
     readFileAsDataURL(displayImg),
@@ -53,39 +53,41 @@ async function submitForm(form) {
     document.querySelector("#texture-image").src = textureImage;
     document.querySelector("#normal-image").src = normalImage;
 
-    // console.log('Calling createGLTFAsset ---');
-    createGLFTAsset(baseImage, textureImage, normalImage, "glb");
+    createGLFTAsset([baseImage, textureImage, normalImage], repeatImage, "glb");
   });
 }
+
 let repeatTexture = false;
-async function createGLFTAsset(uploadedSpace, textureImage = "", normalImage = "", type = "gltf") {
-  // console.log("inside create gltf --- ");
-  // console.log(uploadedSpace);
-  // console.log(textureImage);
+async function createGLFTAsset(textures, repeatImage, type = "gltf") {
+  repeatTexture = repeatImage > 1;
 
-  let doubleSize = false;
-  if ($('#textureRepeat').is(':checked')) { repeatTexture = true }
-
-  let asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
-  let scene = new GLTFUtils.Scene("");
+  // create GLTF asset, scene and node
+  const asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
+  const scene = new GLTFUtils.Scene("");
   asset.addScene(scene);
-  let node = new GLTFUtils.Node("PngGlb");
+  const node = new GLTFUtils.Node("PngGlb");
   scene.addNode(node);
-  const vertices = [[0, 0, 0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 0, 0, 2, 0, 0, 0], [0, 0, 0, 0, 1, 4, 0, 0, 1, 1, 4, 4, 0, 1, 0, 0, 4, 0, 0, 0], [0, 0, 0, 0, 4, 4, 0, 0, 4, 4, 4, 4, 0, 4, 0, 0, 4, 0, 0, 0]]
-  var meshVertices = repeatTexture ? vertices[2] : doubleSize ? vertices[1] : vertices[0];
 
+  // define vertices 
+  var vertices = [0, 0, 0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 0, 0, 2, 0, 0, 0]
   let vertex_hash = [];
-  for (let i = 0; i < meshVertices.length; i += 5) {
+  for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
-    vertex.x = meshVertices[i];
-    vertex.y = meshVertices[i + 1];
-    vertex.z = meshVertices[i + 2];
-    vertex.u = meshVertices[i + 3]; // texture co-ord
-    vertex.v = meshVertices[i + 4]; // texture co-ord
+    vertex.x = vertices[i];
+    vertex.y = vertices[i + 1];
+    vertex.z = vertices[i + 2];
+    if (repeatTexture) {
+      vertex.u = vertices[i + 3] * repeatImage; // texture co-ord
+      vertex.v = vertices[i + 4] * repeatImage; // texture co-ord
+    } else {
+      vertex.u = vertices[i + 3];
+      vertex.v = vertices[i + 4];
+    }
     vertex_hash.push(vertex);
   }
-  var triangles = [0, 1, 2, 2, 3, 0];
 
+  // create mesh and add faces
+  var triangles = [0, 1, 2, 2, 3, 0];
   const mesh = new GLTFUtils.Mesh();
   for (let i = 0; i < triangles.length; i += 3) {
     v1 = vertex_hash[triangles[i]];
@@ -94,12 +96,13 @@ async function createGLFTAsset(uploadedSpace, textureImage = "", normalImage = "
     mesh.addFace(v1, v2, v3, { r: 1, g: 1, b: 1 }, 0);
   }
 
-  var material = await createMaterial(uploadedSpace, textureImage, normalImage);
-  // console.log("material--")
-  // console.log(material);
+  // create material
+  const material = await createMaterial(textures);
   mesh.material = [material];
   node.mesh = mesh;
   console.log(asset);
+
+  // export asset as GLB or GLTF
   if (type == 'glb') {
     exportGlb(asset);
   } else if (type == 'gltf') {
@@ -107,27 +110,27 @@ async function createGLFTAsset(uploadedSpace, textureImage = "", normalImage = "
   }
 }
 
-async function createMaterial(uploadedSpace, textureImage, normalImage) {
-  let doubleSize = false;
+async function createMaterial(textures) {
   const material = new GLTFUtils.Material();
 
+  // Base texture handling
   let baseTexture = "";
-  let base = document.getElementById('display-image');
   try {
-    baseTexture = new GLTFUtils.Texture(uploadedSpace);
+    baseTexture = new GLTFUtils.Texture(textures[0]);
   } catch (err) {
     console.log(err);
     baseTexture = new GLTFUtils.Texture(await fetchJpgImage("display-image"));
   }
-  let wrapMode = repeatTexture || doubleSize ? GLTFUtils.WrappingMode.REPEAT : GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
+  let wrapMode = repeatTexture ? GLTFUtils.WrappingMode.REPEAT : GLTFUtils.WrappingMode.CLAMP_TO_EDGE;
   baseTexture.wrapS = wrapMode;
   baseTexture.wrapT = GLTFUtils.WrappingMode.REPEAT;
   material.pbrMetallicRoughness.baseColorTexture = baseTexture;
 
+  // Roughness texture handling
   let roughnessTexture = "";
-  if (textureImage != "data:application/octet-stream;base64,") {
+  if (textures[1] != "data:application/octet-stream;base64,") {
     try {
-      roughnessTexture = new GLTFUtils.Texture(textureImage);
+      roughnessTexture = new GLTFUtils.Texture(textures[1]);
     } catch (err) {
       console.log(err);
       roughnessTexture = new GLTFUtils.Texture(await fetchJpgImage("texture-image"));
@@ -136,21 +139,24 @@ async function createMaterial(uploadedSpace, textureImage, normalImage) {
     roughnessTexture.wrapT = GLTFUtils.WrappingMode.REPEAT;
     material.pbrMetallicRoughness.metallicRoughnessTexture = roughnessTexture;
   }
-  material.pbrMetallicRoughness.roughnessFactor = 0.5;
-  material.pbrMetallicRoughness.metallicFactor = 0.5;
-  material.doubleSided = true;
-  material.pbrMetallicRoughness.metallicRoughnessTexture = roughnessTexture;
 
+  // Normal texture handling
   let normalTexture = "";
-  if (normalImage != "data:application/octet-stream;base64,") {
+  if (textures[2] != "data:application/octet-stream;base64,") {
     try {
-      normalTexture = new GLTFUtils.Texture(normalImage);
+      normalTexture = new GLTFUtils.Texture(textures[2]);
     } catch (err) {
       console.log(err);
       normalTexture = new GLTFUtils.Texture(await fetchJpgImage("normal-image"));
     }
+    normalTexture.wrapS = wrapMode;
+    normalTexture.wrapT = GLTFUtils.WrappingMode.REPEAT;
     material.normalTexture = normalTexture;
   }
+  // other material properties
+  material.pbrMetallicRoughness.roughnessFactor = 0.5;
+  material.pbrMetallicRoughness.metallicFactor = 0.5;
+  material.doubleSided = true;
   return material;
 }
 
@@ -185,7 +191,8 @@ async function fetchJpgImage(name) {
 function resetForm() {
   document.getElementById('imagePreview').src = "";
   $("#submitBtn").addClass("disabled");
-
+  toggleSection("checkboxRoughness", "roughness-section");
+  toggleSection("normalTexture", "normal-section");
 }
 
 function toggleSection(checkboxId, sectionId) {
