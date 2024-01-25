@@ -58,7 +58,7 @@ async function submitForm(form) {
 }
 
 let repeatTexture = false;
-async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage, type = "glb") {
+async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage = 1, type = "glb") {
   repeatTexture = repeatImage > 1;
 
   // create GLTF asset, scene and node
