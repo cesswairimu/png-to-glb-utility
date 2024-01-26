@@ -26,11 +26,11 @@
 					(see <a href="http://ambientcg.com" class="link-info">ambientcg.com</a> for image sources)
 				</p>
 				<div class="btn-group btn-group-md pb-3 h-30">
-					<label class="btn btn-outline-secondary">
+					<label class="btn btn-outline-secondary text-dark box-bg">
 						Choose an Image
 						<input type="file" id="fileInput" name="fileInput1" style="display: none;" accept=".jpg,.png">
 					</label>
-					<textarea class="btn btn-outline-secondary" id="fileNameOutput" name="preview" readonly></textarea>
+					<textarea class="btn btn-outline-secondary box-bg" id="fileNameOutput" name="preview" readonly></textarea>
 				</div><br>
 
 				<div class="d-inline-flex w-auto pb-2">
@@ -40,17 +40,19 @@
 
 					<div class="d-flex flex-column mb-3">
 						<div class="btn-group btn-group-md h-30 pt-3 ps-2">
-							<div class="btn btn-outline-secondary disabled">
+							<label class="btn btn-outline-secondary disabled bg-light text-dark">
 								Tile image width by:
-							</div>
-							<input type="number" min="1" max="50" value="1" class="btn btn-outline-secondary" name="repeatWidth">
+							</label>
+							<input type="number" min="1" max="50" value="1" class="btn btn-outline-secondary"
+								name="repeatWidth">
 						</div> <br>
 
 						<div class="btn-group btn-group-md h-30 pt-2 ps-2">
-							<div class="btn btn-outline-secondary disabled">
+							<div class="btn btn-outline-secondary disabled text-dark">
 								Tile image height by:
 							</div>
-							<input type="number" min="1" max="50" value="1" class="btn btn-outline-secondary" name="repeatHeight">
+							<input type="number" min="1" max="50" value="1" class="btn btn-outline-secondary"
+								name="repeatHeight">
 						</div>
 					</div>
 				</div>
@@ -66,7 +68,7 @@
 				<div class="row justify-content-center align-items-center w-500">
 					<div id="roughness-section" class="col-4 bg-gray-500 text-center p-4 rounded box-bg" style="display: none;">
 						<div class="btn-group btn-group-sm pb-2">
-							<label class="btn btn-outline-secondary">
+							<label class="btn btn-outline-secondary text-dark">
 								Choose a Texture
 								<input type="file" id="fileInput1" name="fileInput2" style="display: none;" accept=".jpg,.png">
 							</label>
@@ -87,7 +89,7 @@
 				<div class="row justify-content-center align-items-center w-500">
 					<div id="normal-section" class="col-4 bg-gray-500 text-center p-4 rounded box-bg" style="display: none;">
 						<div class="btn-group btn-group-sm pb-2">
-							<label class="btn btn-outline-secondary text-secondary">
+							<label class="btn btn-outline-secondary text-secondary text-dark">
 								Choose a normal Texture
 								<input type="file" id="fileInput2" name="fileInput3" style="display: none;" accept=".jpg,.png">
 							</label>

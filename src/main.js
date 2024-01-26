@@ -43,6 +43,7 @@ async function submitForm(form) {
   const normalImg = formData.get('fileInput3');
   const tileWidth = formData.get('repeatWidth');
   const tileHeight = formData.get('repeatHeight');
+  console.log(displayImg);
 
   console.log("Tile image by width, height", tileWidth, tileHeight);
 
@@ -59,8 +60,9 @@ async function submitForm(form) {
   });
 }
 
+// Create GLTF asset
 let repeatTexture = false;
-async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage, type = "glb") {
+async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage) {
   repeatTexture = repeatImage.some(el => el > 1);
   console.log(repeatTexture);
 
@@ -100,12 +102,8 @@ async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage
   node.mesh = mesh;
   console.log(asset);
 
-  // export asset as GLB or GLTF
-  if (type == 'glb') {
-    exportGlb(asset);
-  } else if (type == 'gltf') {
-    exportGltf(asset);
-  }
+  // export asset as GLB
+  exportGlb(asset);
 }
 
 async function createMaterial(baseImage, textureImage, normalImage) {
@@ -158,20 +156,6 @@ async function createMaterial(baseImage, textureImage, normalImage) {
   return material;
 }
 
-async function exportGltf(asset) {
-  let files = await GLTFUtils.exportGLTF(asset, {
-    bufferOutputType: GLTFUtils.BufferOutputType.DataURI,
-    imageOutputType: GLTFUtils.BufferOutputType.DataURI
-  });
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + files['model.gltf']);
-  element.setAttribute('download', "file.gltf");
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-}
-
 async function exportGlb(asset) {
   let files = await GLTFUtils.exportGLB(asset);
   const arrayBuffer = files;
@@ -189,8 +173,9 @@ async function fetchJpgImage(name) {
 function resetForm() {
   document.getElementById('imagePreview').src = "";
   $("#submitBtn").addClass("disabled");
-  toggleSection("checkboxRoughness", "roughness-section");
-  toggleSection("normalTexture", "normal-section");
+  // hidden sections
+  $("#roughness-section").css("display", "none");
+  $("#normal-section").css("display", "none");
 }
 
 function toggleSection(checkboxId, sectionId) {

@@ -1,40 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>png-image-to-glb-formated-file-gen</title>
 
-		<script src="https://cdn.jsdelivr.net/npm/gltf-js-utils/dist/gltfjsutils.js"></script>
-		<script src="../node_modules/jquery/dist/jquery.min.js"></script>
-		<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-		<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>png-image-to-glb-formated-file-gen</title>
 
-		<link rel="stylesheet" href="main.css">
-		<script src="../dist/main.js"></script>
-	</head>
-	<body>
-		<div class="container center">
-			<br>
-			<h3> An image to gltf converter</h3>
-			<p> ( Choose a image[png] file to create a gltf asset using the image and download it as .gltf )</p>
-			<br>
-			<div class="row">
-				<div class="mb-3">
-					<label for="formFile" class="form-label" id="img-preview">File input</label>
-					<input class="form-control" type="file" id="formFile" accept="image/png">
-					<br>
-				 <!-- <div class="invisible" id="convert-btn">
-					 <button type="button" class="btn btn-secondary">Convert to glb</button>
-				 </div> -->
-				 <!-- <img id="uploaded-image" height="300" width="350"> -->
-				</div>
+	<script src="https://cdn.jsdelivr.net/npm/gltf-js-utils/dist/gltfjsutils.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="shortcut icon" type="image/png" href="#" />
+
+	<link rel="stylesheet" href="main.css">
+	<script src="../dist/png-to-glb-utility.js"></script>
+</head>
+
+<body>
+	<div class="container center">
+		
+		<h3> An example of converting png/jpeg to .gltf</h3>
+		<p> This example uses HTML IMAGE ELEMENT (png or jpeg) as an input </p>
+		<p> -- Other accepted formats are [ HTMLCanvasElement, ArrayBuffer(PNG) , Data URL(PNG) ] ---</p>
+		<br>
+		<div class="row">
+			<div class="mb-3">
+				<br>
+				<img class="invisible" id="img" src="base.png" style="visibility: hidden;" />
+				<img class="invisible" id="img0" src="wood.jpg" style="visibility: hidden;" />
+				<img class="invisible" id="img1" src="base.png" style="visibility: hidden;" />
+				<img class="invisible" id="img2" src="roughness.png" style="visibility: hidden;" />
+				<img class="invisible" id="img3" src="normal.png" style="visibility: hidden;" />
+
+
 			</div>
-	
+		</div>
+
 		<script>
-			init('gltf');
+
+			let img = document.getElementById("img0");
+			let img1 = document.getElementById("img2");
+			let img2 = document.getElementById("img3");
+			let img3 = document.getElementById("img1");
+
+			createGLFTAsset(img, img1, img2, [4, 6], "gltf");
+			// createGLFTAsset(img, "", "", [1, 1], "gltf");
+
+
 		</script>
 
 
 </body>
+
 </html>
