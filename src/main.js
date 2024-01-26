@@ -110,7 +110,6 @@ async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage
 
 async function createMaterial(baseImage, textureImage, normalImage) {
   const material = new GLTFUtils.Material();
-  // repeatTexture = true;
 
   // Base texture handling
   let baseTexture = "";
