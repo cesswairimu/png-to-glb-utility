@@ -1,65 +1,68 @@
-function init() {
-  toggleSection("checkboxRoughness", "roughness-section");
-  toggleSection("normalTexture", "normal-section");
+// function init() {
+//   toggleSection("checkboxRoughness", "roughness-section");
+//   toggleSection("normalTexture", "normal-section");
 
-  // display uploads
-  const inputFiles = ['fileInput', 'fileInput1', 'fileInput2'];
-  const outputFiles = ['fileNameOutput', 'fileNameOutput1', 'fileNameOutput2'];
-  inputFiles.forEach((elem) => {
-    const input = document.getElementById(elem);
-    const output = document.getElementById(outputFiles[inputFiles.indexOf(elem)]);
-    input.addEventListener("change", (event) => {
-      const fileName = event.target.files[0].name;
-      output.value = fileName;
-      const file = event.target.files[0];
-      const reader = new FileReader();
+//   // display uploads
+//   const inputFiles = ['fileInput', 'fileInput1', 'fileInput2'];
+//   const outputFiles = ['fileNameOutput', 'fileNameOutput1', 'fileNameOutput2'];
+//   inputFiles.forEach((elem) => {
+//     const input = document.getElementById(elem);
+//     const output = document.getElementById(outputFiles[inputFiles.indexOf(elem)]);
+//     input.addEventListener("change", (event) => {
+//       const fileName = event.target.files[0].name;
+//       output.value = fileName;
+//       const file = event.target.files[0];
+//       const reader = new FileReader();
 
-      reader.onload = (e) => {
-        if (elem === "fileInput") {
-          document.getElementById('imagePreview').src = e.target.result;
-          $("#submitBtn").removeClass("disabled");
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  });
+//       reader.onload = (e) => {
+//         if (elem === "fileInput") {
+//           document.getElementById('imagePreview').src = e.target.result;
+//           $("#submitBtn").removeClass("disabled");
+//         }
+//       };
+//       reader.readAsDataURL(file);
+//     });
+//   });
 
-  const form = document.getElementById("inputForm");
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    submitForm(form)
+//   const form = document.getElementById("inputForm");
+//   form.addEventListener("submit", async (e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     submitForm(form)
 
-    form.reset();
-    resetForm();
-  });
-}
+//     form.reset();
+//     resetForm();
+//   });
+// }
 
 //submit form
-async function submitForm(form) {
-  const formData = new FormData(form);
-  const displayImg = formData.get('fileInput1');
-  const textureImg = formData.get('fileInput2');
-  const normalImg = formData.get('fileInput3');
-  const repeatImage = formData.get('repeatImage');
-  console.log("Tile image by", repeatImage);
+// async function submitForm(form) {
+//   const formData = new FormData(form);
+//   const displayImg = formData.get('fileInput1');
+//   const textureImg = formData.get('fileInput2');
+//   const normalImg = formData.get('fileInput3');
+//   const tileWidth = formData.get('repeatWidth');
+//   const tileHeight = formData.get('repeatHeight');
 
-  await Promise.all([
-    readFileAsDataURL(displayImg),
-    readFileAsDataURL(textureImg),
-    readFileAsDataURL(normalImg)
-  ]).then(([baseImage, textureImage, normalImage]) => {
-    document.querySelector("#display-image").src = baseImage;
-    document.querySelector("#texture-image").src = textureImage;
-    document.querySelector("#normal-image").src = normalImage;
+//   console.log("Tile image by width, height", tileWidth, tileHeight);
 
-    createGLFTAsset(baseImage, textureImage, normalImage, repeatImage);
-  });
-}
+//   await Promise.all([
+//     readFileAsDataURL(displayImg),
+//     readFileAsDataURL(textureImg),
+//     readFileAsDataURL(normalImg)
+//   ]).then(([baseImage, textureImage, normalImage]) => {
+//     document.querySelector("#display-image").src = baseImage;
+//     document.querySelector("#texture-image").src = textureImage;
+//     document.querySelector("#normal-image").src = normalImage;
+
+//     createGLFTAsset(baseImage, textureImage, normalImage, [tileWidth, tileHeight]);
+//   });
+// }
 
 let repeatTexture = false;
-async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage = 1, type = "glb") {
-  repeatTexture = repeatImage > 1;
+async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage = [1, 1], type = "glb") {
+  repeatTexture = repeatImage.some(el => el > 1);
+  console.log(repeatTexture);
 
   // create GLTF asset, scene and node
   const asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
@@ -68,21 +71,16 @@ async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage
   const node = new GLTFUtils.Node("PngGlb");
   scene.addNode(node);
 
-  // define vertices 
-  var vertices = [0, 0, 0, 0, 1, 2, 0, 0, 1, 1, 2, 2, 0, 1, 0, 0, 2, 0, 0, 0]
+  var vertices = [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0]
+
   let vertex_hash = [];
   for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
     vertex.x = vertices[i];
     vertex.y = vertices[i + 1];
     vertex.z = vertices[i + 2];
-    if (repeatTexture) {
-      vertex.u = vertices[i + 3] * repeatImage; // texture co-ord
-      vertex.v = vertices[i + 4] * repeatImage; // texture co-ord
-    } else {
-      vertex.u = vertices[i + 3];
-      vertex.v = vertices[i + 4];
-    }
+    vertex.u = vertices[i + 3] * repeatImage[0]; // texture co-ord
+    vertex.v = vertices[i + 4] * repeatImage[1]; // texture co-ord
     vertex_hash.push(vertex);
   }
 
@@ -112,6 +110,7 @@ async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage
 
 async function createMaterial(baseImage, textureImage, normalImage) {
   const material = new GLTFUtils.Material();
+  // repeatTexture = true;
 
   // Base texture handling
   let baseTexture = "";
@@ -188,27 +187,27 @@ async function fetchJpgImage(name) {
   return document.getElementById(name);
 }
 
-function resetForm() {
-  document.getElementById('imagePreview').src = "";
-  $("#submitBtn").addClass("disabled");
-  toggleSection("checkboxRoughness", "roughness-section");
-  toggleSection("normalTexture", "normal-section");
-}
+// function resetForm() {
+//   document.getElementById('imagePreview').src = "";
+//   $("#submitBtn").addClass("disabled");
+//   toggleSection("checkboxRoughness", "roughness-section");
+//   toggleSection("normalTexture", "normal-section");
+// }
 
-function toggleSection(checkboxId, sectionId) {
-  const checkbox = document.getElementById(checkboxId);
-  const section = document.getElementById(sectionId);
+// function toggleSection(checkboxId, sectionId) {
+//   const checkbox = document.getElementById(checkboxId);
+//   const section = document.getElementById(sectionId);
 
-  checkbox.addEventListener("change", () => {
-    section.style.display = checkbox.checked ? 'block' : 'none';
-  });
-}
+//   checkbox.addEventListener("change", () => {
+//     section.style.display = checkbox.checked ? 'block' : 'none';
+//   });
+// }
 
-function readFileAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
+// function readFileAsDataURL(file) {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = reject;
+//     reader.readAsDataURL(file);
+//   });
+// }
