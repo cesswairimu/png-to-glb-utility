@@ -78,8 +78,8 @@ async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage
   let vertex_hash = [];
   for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
-    vertex.x = vertices[i];
-    vertex.y = vertices[i + 1];
+    vertex.x = vertices[i] * repeatImage[0];
+    vertex.y = vertices[i + 1] * repeatImage[1];
     vertex.z = vertices[i + 2];
     vertex.u = vertices[i + 3] * repeatImage[0]; // texture co-ord
     vertex.v = vertices[i + 4] * repeatImage[1]; // texture co-ord
