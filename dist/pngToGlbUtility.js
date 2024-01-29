@@ -11,6 +11,7 @@ var assetDetails = {
 
 let repeatTexture = false;
 async function createGLFTAsset(assetDetails) {
+  assetDetails.tile == null ? assetDetails.tile = [1, 1] : assetDetails.tile
   repeatTexture = assetDetails.tile.some(el => el > 1);
 
   // create GLTF asset, scene and node
@@ -25,8 +26,8 @@ async function createGLFTAsset(assetDetails) {
   let vertex_hash = [];
   for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
-    var widthTile = assetDetails.tile[0]
-    var heightTile = assetDetails.tile[1]
+    var widthTile = assetDetails.tile[0];
+    var heightTile = assetDetails.tile[1];
     vertex.x = vertices[i] * widthTile;
     vertex.y = vertices[i + 1] * heightTile;
     vertex.z = vertices[i + 2];
@@ -52,10 +53,10 @@ async function createGLFTAsset(assetDetails) {
   console.log(asset);
 
   // export asset as GLB or GLTF
-  if (assetDetails.type == 'glb') {
-    exportGlb(asset);
-  } else if (assetDetails.type == 'gltf') {
+  if (assetDetails.type == 'gltf') {
     exportGltf(asset);
+  } else {
+    exportGlb(asset);
   }
 }
 

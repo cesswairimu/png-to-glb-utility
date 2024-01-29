@@ -15,9 +15,17 @@ Example of a tiled textured surface created with the utility and the resulting s
 - Add a roughness and a normal texture with the above accepted formats.
 - Specify if you want the texture to repeat/tile on the surface.  Tiles by height 1 and width 1 by default. Expects an number array input like so  `[widthTile, HeightTile]`.
 - Specify if you want to download the asset as a glb or gltf it downloads a .glb  file by default
-> Example 
-```
-createGLFTAsset("baseHTMLImage", "", "",[4,7], "gltf")
+> Example
+ ```
+const assetProperties = {
+  baseTexture: "baseImage",
+  roughnessTexture: "",
+  normalTexture: "",
+  tile: [7, 4],
+  type: "gltf"
+}
+createGLFTAsset(assetProperties)
+
 ```
 
 ## dependecies
