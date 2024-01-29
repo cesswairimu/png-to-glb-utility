@@ -55,16 +55,22 @@ async function submitForm(form) {
     document.querySelector("#display-image").src = baseImage;
     document.querySelector("#texture-image").src = textureImage;
     document.querySelector("#normal-image").src = normalImage;
-
-    createGLFTAsset(baseImage, textureImage, normalImage, [tileWidth, tileHeight]);
+    const assetDetails = {
+      baseTexture: baseImage,
+      roughnessTexture: textureImage,
+      normalTexture: normalImage,
+      tile: [tileWidth, tileHeight],
+      type: "glb"
+    }
+    createGLFTAsset(assetDetails);
   });
 }
 
+
 // Create GLTF asset
 let repeatTexture = false;
-async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage) {
-  repeatTexture = repeatImage.some(el => el > 1);
-  console.log(repeatTexture);
+async function createGLFTAsset(assetDetails) {
+  repeatTexture = assetDetails.tile.some(el => el > 1);
 
   // create GLTF asset, scene and node
   const asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
@@ -78,11 +84,13 @@ async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage
   let vertex_hash = [];
   for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
-    vertex.x = vertices[i] * repeatImage[0];
-    vertex.y = vertices[i + 1] * repeatImage[1];
+    var widthTile = assetDetails.tile[0]
+    var heightTile = assetDetails.tile[1]
+    vertex.x = vertices[i] * widthTile;
+    vertex.y = vertices[i + 1] * heightTile;
     vertex.z = vertices[i + 2];
-    vertex.u = vertices[i + 3] * repeatImage[0]; // texture co-ord
-    vertex.v = vertices[i + 4] * repeatImage[1]; // texture co-ord
+    vertex.u = vertices[i + 3] * widthTile; // texture co-ord
+    vertex.v = vertices[i + 4] * heightTile; // texture co-ord
     vertex_hash.push(vertex);
   }
 
@@ -97,7 +105,7 @@ async function createGLFTAsset(baseImage, textureImage, normalImage, repeatImage
   }
 
   // create material
-  const material = await createMaterial(baseImage, textureImage, normalImage);
+  const material = await createMaterial(assetDetails.baseTexture, assetDetails.roughnessTexture, assetDetails.normalTexture);
   mesh.material = [material];
   node.mesh = mesh;
   console.log(asset);

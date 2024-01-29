@@ -1,7 +1,17 @@
+/*
+var assetDetails = {
+  baseTexture: "baseImage",
+  roughnessTexture: "",
+  normalTexture: "",
+  tile: [1, 1],
+  type: "glb"
+}
+*/
+
 
 let repeatTexture = false;
-async function createGLFTAsset(baseImage, textureImage = "", normalImage = "", repeatImage = [1, 1], type = "glb") {
-  repeatTexture = repeatImage.some(el => el > 1);
+async function createGLFTAsset(assetDetails) {
+  repeatTexture = assetDetails.tile.some(el => el > 1);
 
   // create GLTF asset, scene and node
   const asset = new GLTFUtils.GLTFAsset({ "number": 0, "index": 0 });
@@ -15,11 +25,13 @@ async function createGLFTAsset(baseImage, textureImage = "", normalImage = "", r
   let vertex_hash = [];
   for (let i = 0; i < vertices.length; i += 5) {
     const vertex = new GLTFUtils.Vertex();
-    vertex.x = vertices[i];
-    vertex.y = vertices[i + 1];
+    var widthTile = assetDetails.tile[0]
+    var heightTile = assetDetails.tile[1]
+    vertex.x = vertices[i] * widthTile;
+    vertex.y = vertices[i + 1] * heightTile;
     vertex.z = vertices[i + 2];
-    vertex.u = vertices[i + 3] * repeatImage[0]; // texture co-ord
-    vertex.v = vertices[i + 4] * repeatImage[1]; // texture co-ord
+    vertex.u = vertices[i + 3] * widthTile; // texture co-ord
+    vertex.v = vertices[i + 4] * heightTile; // texture co-ord
     vertex_hash.push(vertex);
   }
 
@@ -34,15 +46,15 @@ async function createGLFTAsset(baseImage, textureImage = "", normalImage = "", r
   }
 
   // create material
-  const material = await createMaterial(baseImage, textureImage, normalImage);
+  const material = await createMaterial(assetDetails.baseTexture, assetDetails.roughnessTexture, assetDetails.normalTexture);
   mesh.material = [material];
   node.mesh = mesh;
   console.log(asset);
 
   // export asset as GLB or GLTF
-  if (type == 'glb') {
+  if (assetDetails.type == 'glb') {
     exportGlb(asset);
-  } else if (type == 'gltf') {
+  } else if (assetDetails.type == 'gltf') {
     exportGltf(asset);
   }
 }

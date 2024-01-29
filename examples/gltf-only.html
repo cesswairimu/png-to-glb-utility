@@ -18,7 +18,7 @@
 
 <body>
 	<div class="container center">
-		
+
 		<h3> An example of converting png/jpeg to .gltf</h3>
 		<p> This example uses HTML IMAGE ELEMENT (png or jpeg) as an input </p>
 		<p> -- Other accepted formats are [ HTMLCanvasElement, ArrayBuffer(PNG) , Data URL(PNG) ] ---</p>
@@ -40,7 +40,15 @@
 			let img1 = document.getElementById("img1");
 			let img2 = document.getElementById("img2");
 
-			createGLFTAsset(img, img1, img2, [4, 6], "gltf");
+			var assetDetails = {
+				baseTexture: img,
+				roughnessTexture: img1,
+				normalTexture: img2,
+				tile: [4, 6],
+				type: "gltf"
+			}
+
+			createGLFTAsset(assetDetails);
 			// createGLFTAsset(img, "", "", [1, 1], "gltf");
 
 
